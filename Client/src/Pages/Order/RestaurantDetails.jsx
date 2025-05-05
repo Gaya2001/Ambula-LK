@@ -24,12 +24,13 @@ function RestaurantMenuPage() {
   const [isLocationPopupOpen, setIsLocationPopupOpen] = useState(true);
 
   const menuIcons = {
-    Breakfast: "🥗",
-    kottuspecial: "🍰",
-    Beverages: "🥤",
-    dinner: "🍟",
-    lunch: "🍚",
-    Others: "🍽️",
+    SALADS: "🥗",
+    COMBOS: "🍔",
+    EXTRACARBS: "🥘",
+    SIGNATUREDISHES: "🍲",
+    Ramadan: "🍛",
+    KIDSMEALS: "🥠",
+    
   };
 
   const getImageUrl = (path) => {
@@ -200,7 +201,7 @@ function RestaurantMenuPage() {
     );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 pb-24 bg-gray-200">
+    <div className="max-w-7xl mx-auto px-4 py-8 pb-24 ">
       {/* Delivery Location Popup - shows on page load */}
       <DeliveryLocationPopup
         isOpen={isLocationPopupOpen}
@@ -256,13 +257,13 @@ function RestaurantMenuPage() {
 
       {/* Menu Categories */}
       <div className="mb-8">
-        <h2 className="text-2xl text-black font-bold mb-6">Menu Categories</h2>
+        <h2 className="text-2xl text-white font-bold mb-6">Menu Categories</h2>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           <button
             onClick={() => setSelectedCategory("")}
             className={`flex flex-col items-center p-4 rounded-lg min-w-[100px] ${selectedCategory === ""
                 ? "bg-[#FC8A06] text-white"
-                : "bg-[#03081F] text-white hover:bg-gray-900 border border-gray-800"
+                : "bg-[#03081F] text-white hover:bg-gray-600 border border-gray-200"
               }`}
           >
             <span className="text-2xl mb-2">🍽️</span>
@@ -274,7 +275,7 @@ function RestaurantMenuPage() {
               onClick={() => setSelectedCategory(menu._id)}
               className={`flex flex-col items-center p-4 rounded-lg min-w-[100px] ${selectedCategory === menu._id
                   ? "bg-[#FC8A06] text-white"
-                  : "bg-[#03081F] text-white hover:bg-gray-900 border border-gray-800"
+                  : "bg-[#03081F] text-white hover:bg-gray-900 border border-gray-100"
                 }`}
             >
               <span className="text-2xl mb-2">
@@ -291,7 +292,7 @@ function RestaurantMenuPage() {
         {displayedItems.map((item) => (
           <div
             key={item._id}
-            className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden transform transition duration-300 hover:shadow-2xl hover:scale-[1.03]"
+            className="bg-transparent rounded-2xl shadow-md border border-gray-100 overflow-hidden transform transition duration-300 hover:shadow-2xl hover:scale-[1.03]"
           >
             {item.images?.[0] && (
               <img
@@ -307,7 +308,7 @@ function RestaurantMenuPage() {
             <div className="p-4">
               {/* Name and Rating in one row */}
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+                <h3 className="text-lg font-semibold text-white">{item.name}</h3>
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -323,14 +324,14 @@ function RestaurantMenuPage() {
               </div>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[36px]">{item.description}</p>
+              <p className="text-white text-sm mb-4 line-clamp-2 min-h-[36px]">{item.description}</p>
 
               {/* Price and Add Button */}
               <div className="flex items-center justify-between">
-                <span className="text-green-600 font-bold text-lg">Rs. {item.price}</span>
+                <span className="text-orange-500 font-bold text-lg">Rs. {item.price}</span>
                 <button
                   onClick={() => addToCart(item)}
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md hover:from-green-600 hover:to-green-700 transition"
+                  className="bg-gradient-to-r bg-[#FC8A06] text-black px-4 py-2 rounded-full text-sm font-medium shadow-md hover:from-green-600 hover:to-green-700 transition"
                 >
                   Add
                 </button>

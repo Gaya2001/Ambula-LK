@@ -21,7 +21,7 @@ const OrdersPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(true);
-  const [cancelLoading, setCancelLoading] = useState(false);
+  // const [cancelLoading, setCancelLoading] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false);
@@ -146,63 +146,63 @@ const OrdersPage = () => {
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (window.confirm("Are you sure you want to cancel this order?")) {
-      setCancelLoading(true);
+  // const handleCancelOrder = async () => {
+  //   if (window.confirm("Are you sure you want to cancel this order?")) {
+  //     setCancelLoading(true);
 
-      try {
-        // If this is a pending order (not yet sent to server)
-        if (!order._id) {
-          // Simply clear the pending order
-          localStorage.removeItem("pendingOrder");
-          localStorage.removeItem("cart");
+  //     try {
+  //       // If this is a pending order (not yet sent to server)
+  //       if (!order._id) {
+  //         // Simply clear the pending order
+  //         localStorage.removeItem("pendingOrder");
+  //         localStorage.removeItem("cart");
 
-          // Set a flag to indicate order was deleted
-          sessionStorage.setItem("orderDeleted", "true");
+  //         // Set a flag to indicate order was deleted
+  //         sessionStorage.setItem("orderDeleted", "true");
 
-          setSuccessMessage("Order cancelled successfully!");
+  //         setSuccessMessage("Order cancelled successfully!");
 
-          // Navigate after a delay
-          setTimeout(() => {
-            navigate("/restaurants");
-          }, 2000);
-          return;
-        }
+  //         // Navigate after a delay
+  //         setTimeout(() => {
+  //           navigate("/restaurants");
+  //         }, 2000);
+  //         return;
+  //       }
 
-        // Otherwise call the delete order API endpoint
-        const response = await orderService.deleteOrder(order._id);
+  //       // Otherwise call the delete order API endpoint
+  //       const response = await orderService.deleteOrder(order._id);
 
-        if (response.data.success) {
-          setSuccessMessage("Order cancelled successfully!");
+  //       if (response.data.success) {
+  //         setSuccessMessage("Order cancelled successfully!");
 
-          // Clear both pending order and cart
-          localStorage.removeItem("pendingOrder");
-          localStorage.removeItem("cart");
+  //         // Clear both pending order and cart
+  //         localStorage.removeItem("pendingOrder");
+  //         localStorage.removeItem("cart");
 
-          // Set a flag to indicate order was deleted
-          sessionStorage.setItem("orderDeleted", "true");
+  //         // Set a flag to indicate order was deleted
+  //         sessionStorage.setItem("orderDeleted", "true");
 
-          // Navigate after a delay
-          setTimeout(() => {
-            navigate("/restaurants");
-          }, 2000);
-        } else {
-          setError(
-            "Failed to cancel order: " +
-            (response.data.error || "Unknown error")
-          );
-        }
-      } catch (error) {
-        console.error("Error cancelling order:", error);
-        setError(
-          "Failed to cancel order: " +
-          (error.response?.data?.error || error.message || "Server error")
-        );
-      } finally {
-        setCancelLoading(false);
-      }
-    }
-  };
+  //         // Navigate after a delay
+  //         setTimeout(() => {
+  //           navigate("/restaurants");
+  //         }, 2000);
+  //       } else {
+  //         setError(
+  //           "Failed to cancel order: " +
+  //           (response.data.error || "Unknown error")
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("Error cancelling order:", error);
+  //       setError(
+  //         "Failed to cancel order: " +
+  //         (error.response?.data?.error || error.message || "Server error")
+  //       );
+  //     } finally {
+  //       setCancelLoading(false);
+  //     }
+  //   }
+  // };
 
   const handleEditOrder = () => {
     // Navigate back to cart page to edit the order
@@ -523,7 +523,7 @@ const OrdersPage = () => {
                   )}
 
                   {/* Cancel button for any order */}
-                  <button
+                  {/* <button
                     className={`md:flex-none md:w-auto py-3 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center transition-colors ${cancelLoading ? "opacity-75 cursor-not-allowed" : ""
                       }`}
                     onClick={handleCancelOrder}
@@ -540,7 +540,7 @@ const OrdersPage = () => {
                         Cancel Order
                       </>
                     )}
-                  </button>
+                  </button> */}
                 </div>
               </div>
             )}
