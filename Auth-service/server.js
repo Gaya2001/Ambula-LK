@@ -8,13 +8,13 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const crypto = require("crypto"); // Added for secure password generation
+const crypto = require("crypto");
 
 // Configure dotenv to load environment variables
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5001; // Using PORT from .env (5001)
 const DB_URI = process.env.MONGO_URI;
 
 // Add at the top of server.js
@@ -29,7 +29,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Session middleware - must be configured before Passport
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_session_secret',
+  secret: process.env.JWT_SECRET || 'your_session_secret', // Using JWT_SECRET from .env
   resave: false,
   saveUninitialized: false,
   cookie: { secure: process.env.NODE_ENV === 'production' }
@@ -41,10 +41,6 @@ app.use(passport.session());
 console.log("Callback URL:", `${process.env.BASE_URL}/api/auth/google/callback`);
 
 // Configure Google Strategy
-// In server.js, modify the GoogleStrategy implementation:
-
-// In your GoogleStrategy implementation in server.js
-
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -208,9 +204,7 @@ app.get("/api/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Google OAuth routes
-// In server.js, modify the Google callback handler:
-
+// Google OAuth callback route
 app.get("/api/auth/google/callback", 
   (req, res, next) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
@@ -252,5 +246,5 @@ app.get("/api/auth/google/callback",
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`🚀 Auth service http://localhost:${PORT}`);
+  console.log(`🚀 Auth service running on http://localhost:${PORT}`);
 });
