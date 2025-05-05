@@ -142,10 +142,10 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   const services = [
-    { name: "Admin", url: "http://localhost:4001/api/admin" },
-    { name: "RestaurantOwner", url: "http://localhost:4000/api/restaurant-owners"},
-    // { name: "DeliveryPerson", url: "http://localhost:3001/api/delivery-persons" },
-    { name: "Customer", url: "http://localhost:9000/api/customers" }
+    { name: "Admin", url: "http://localhost:4999/api/admin" },
+    { name: "RestaurantOwner", url: "http://localhost:5005/api/restaurant-owners"},
+     { name: "DeliveryPerson", url: "http://localhost:5002/api/delivery-persons" },
+    { name: "Customer", url: "http://localhost:5006/api/customers" }
   ];
 
   try {

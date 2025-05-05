@@ -122,7 +122,7 @@ export default function RestaurantOffers() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this offer?")) return;
     try {
-      await offersService.deleteRestaurantOffer(id);
+      await offersService.deleteOffer(id);
       setOffers(offers.filter(offer => offer._id !== id));
       showNotification("Offer deleted successfully!");
     } catch (err) {
