@@ -15,7 +15,6 @@ import OwnerProfileData from "../../../components/ResturantManagement/profile/Ow
 import RestaurantDetails from "../../../components/ResturantManagement/profile/RestaurantDetails";
 import RestaurantOrders from "../../../components/ResturantManagement/profile/RestaurantOrders";
 import Analytics from "../../../components/ResturantManagement/profile/Analytics";
-import RestaurantPaymentInfo from "../../../components/ResturantManagement/profile/RestaurantPaymentInfo";
 import MenuManagement from "../../../components/ResturantManagement/profile/MenuManagement";
 import RestaurantOffers from "../../../components/ResturantManagement/profile/RestaurantOffers";
 
@@ -97,15 +96,6 @@ function RestaurantOwnerDashboard() {
               onClick={() => setActiveTab("orders")}
             />
 
-
-
-            <SidebarItem
-              icon={<FaCcAmazonPay />} // You can change this icon
-              title="Payment Info"
-              active={activeTab === "payment"}
-              onClick={() => setActiveTab("payment")}
-            />
-
           </nav>
         </div>
 
@@ -138,8 +128,6 @@ function RestaurantOwnerDashboard() {
               {activeTab === "menu" && "Menus"}
               {activeTab === "offers" && "Offers"}
               {activeTab === "orders" && "Orders Management"}
-
-              {activeTab === "payment" && "Payment Info"}
 
             </h1>
 
@@ -176,7 +164,6 @@ function RestaurantOwnerDashboard() {
           {activeTab === "menu" && <MenuManagement />}
           {activeTab === "offers" && <RestaurantOffers />}
           {activeTab === "orders" && <RestaurantOrders />}
-          {activeTab === "payment" && <RestaurantPaymentInfo />}
 
         </main>
       </div>
