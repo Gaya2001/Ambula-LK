@@ -129,8 +129,8 @@ function RestaurantOwnerDashboard() {
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden bg-[#03081F] ">
         {/* Header */}
-        <header className=" shadow-sm bg-[#03081F]">
-          <div className="flex items-center justify-between px-4 py-3 bg-[#03081F]">
+        <header className="shadow-sm bg-[#03081F]">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#6a471c]">
             <h1 className="text-xl font-semibold text-white">
               {activeTab === "dashboard" && "Analytics Overview"}
               {activeTab === "profile" && "My Profile"}
@@ -158,10 +158,10 @@ function RestaurantOwnerDashboard() {
                   alt="Owner"
                 />
                 <div className="hidden ml-3 md:block">
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="text-sm font-medium text-white-800">
                     Restaurant Owner
                   </p>
-                  <p className="text-xs text-gray-500">Online</p>
+                  <p className="text-xs text-green-500">Online</p>
                 </div>
               </div>
             </div>

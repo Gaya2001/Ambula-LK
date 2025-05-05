@@ -187,7 +187,57 @@ exports.editOffer = async (req, res) => {
 };
 
 
+exports.deleteOffer = async (req, res) => {
+  try {
+    const { offerId } = req.params;
+    const type =  'restaurant'// Expecting type to be passed as a query param: ?type=restaurant or ?type=system
 
+    if (!req.userId) {
+      return res.status(403).json({ success: false, message: 'No authenticated user' });
+    }
+
+    let offer;
+
+    if (type === 'restaurant') {
+      if (req.role !== 'Restaurant Owner') {
+        return res.status(403).json({ success: false, message: 'Unauthorized: You are not a restaurant owner' });
+      }
+
+      offer = await RestaurantOffer.findById(offerId);
+      if (!offer) {
+        return res.status(404).json({ success: false, message: 'Restaurant offer not found' });
+      }
+
+      if (offer.restaurantOwner.toString() !== req.userId) {
+        return res.status(403).json({ success: false, message: 'Unauthorized: You cannot delete this offer' });
+      }
+
+      await offer.deleteOne();
+    } else if (type === 'system') {
+      if (req.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Unauthorized: You are not an admin' });
+      }
+
+      offer = await SystemOffer.findById(offerId);
+      if (!offer) {
+        return res.status(404).json({ success: false, message: 'System offer not found' });
+      }
+
+      // Optional: Only allow the admin who created it to delete
+      if (offer.createdByAdmin.toString() !== req.userId) {
+        return res.status(403).json({ success: false, message: 'Unauthorized: You cannot delete this system offer' });
+      }
+
+      await offer.deleteOne();
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid offer type' });
+    }
+
+    res.json({ success: true, message: 'Offer deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 
 
