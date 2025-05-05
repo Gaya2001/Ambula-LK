@@ -18,7 +18,6 @@ const OwnerProfileData = () => {
     email: "",
     username: "",
     phone: "",
-    password: "",
     nic:""
   });
 
@@ -37,7 +36,6 @@ const OwnerProfileData = () => {
           email: owner.email || "",
           username: owner.username || "",
           phone: owner.phone || "",
-          password: "",
           nic:owner.nic || ""
         });
       } catch {
@@ -144,7 +142,6 @@ const OwnerProfileData = () => {
                           email: ownerData.email,
                           username: ownerData.username,
                           phone: ownerData.phone,
-                          password: "",
                           nic:ownerData.nic
                         });
                         setEditMode(true);
@@ -167,28 +164,29 @@ const OwnerProfileData = () => {
         </div>
 
         <div className="p-6 sm:p-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {["first_name", "last_name", "email", "username", "phone", "password", "nic"].map((field) => (
-              <div key={field} className="flex flex-col">
-                <label className="text-gray-600 font-medium mb-1">
-                  {field.replace("_", " ").toUpperCase()}
-                </label>
-                <input
-                  name={field}
-                  type={field === "password" ? "password" : "text"}
-                  disabled={!editMode}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  className={`px-4 py-2 border rounded-md focus:outline-none ${
-                    editMode
-                      ? "focus:ring-2 focus:ring-orange-500"
-                      : "bg-gray-100 cursor-not-allowed"
-                  }`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {["first_name", "last_name", "email", "username", "phone", "nic"].map((field) => (
+      <div key={field} className="flex flex-col">
+        <label className="text-gray-600 font-medium mb-1">
+          {field.replace("_", " ").toUpperCase()}
+        </label>
+        <input
+          name={field}
+          type="text"
+          disabled={!editMode}
+          value={formData[field]}
+          onChange={handleChange}
+          className={`px-4 py-2 border rounded-md focus:outline-none ${
+            editMode
+              ? "focus:ring-2 focus:ring-orange-500"
+              : "bg-gray-100 cursor-not-allowed"
+          }`}
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
       </div>
     </div>
   );

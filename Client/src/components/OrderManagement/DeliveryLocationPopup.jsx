@@ -130,7 +130,7 @@ function DeliveryLocationPopup({ isOpen, onClose, onSave, initialLocation }) {
           <div className="p-4 border-b">
             <button
               onClick={handleUseCurrentLocation}
-              className="flex items-center justify-center w-full p-3 bg-blue-500 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex items-center justify-center w-full p-3 bg-blue-500 border border-blue-200 rounded-lg  transition-colors"
             >
               {isLoading ? (
                 <div className="animate-spin h-5 w-5 border-2 border-[#FC8A06] border-t-transparent rounded-full mr-2"></div>

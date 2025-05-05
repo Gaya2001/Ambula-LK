@@ -16,7 +16,6 @@ const RestaurantOwners = () => {
     setLoading(true);
     try {
       const response = await adminService.getRestaurantOwners();
-      console.log("restaurant owners : ", response.data.restaurantOwners.users);
       const data = response.data.restaurantOwners.users;
       setOwners(data);
       setError(null);

@@ -9,6 +9,7 @@ router.get('/', offerController.getAllOffers);
 router.get('/restaurant', offerController.getAllRestaurantOffers);
 router.get('/restaurant/:restaurantId',authenticateToken ,offerController.getOffersByRestaurantId);
 router.put("/:offerId",authenticateToken,offerController.editOffer);
+router.delete("/:offerId", authenticateToken,offerController.deleteOffer);
 
 
 module.exports = router;
