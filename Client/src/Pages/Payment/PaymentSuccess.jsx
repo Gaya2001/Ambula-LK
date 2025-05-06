@@ -12,12 +12,30 @@ const PaymentSuccess = () => {
   const [error, setError] = useState('');
   const receiptRef = useRef(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [syncingPayment, setSyncingPayment] = useState(false);
 
   // Function to generate a unique payment ID if one isn't provided
   const generatePaymentId = () => {
     const timestamp = new Date().getTime();
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     return `PH${timestamp}${random}`;
+  };
+
+  // Function to ensure payment status is updated in order service
+  const ensurePaymentSynced = async (orderId) => {
+    if (!orderId) return;
+    
+    try {
+      setSyncingPayment(true);
+      console.log('Ensuring payment is synced with order service...');
+      await PaymentService.forceSuccessPayment(orderId);
+      console.log('Payment status forced to success and synced with order service');
+    } catch (err) {
+      console.error('Error syncing payment with order:', err);
+      // Don't show error to user as this is an automatic background process
+    } finally {
+      setSyncingPayment(false);
+    }
   };
 
   useEffect(() => {
@@ -48,6 +66,9 @@ const PaymentSuccess = () => {
             data.paymentId = generatePaymentId();
             console.log('Generated payment ID:', data.paymentId);
           }
+
+          // NEW: Ensure payment status is synced with order service
+          await ensurePaymentSynced(orderId);
         }
         
         setPaymentDetails(data);
@@ -225,13 +246,15 @@ const PaymentSuccess = () => {
           <p className="mt-2 text-lg text-gray-600">Your payment has been successfully processed through PayHere</p>
         </div>
 
-        {loading ? (
+        {loading || syncingPayment ? (
           <div className="flex items-center justify-center py-8">
             <svg className="w-12 h-12 text-blue-500 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span className="ml-2 text-lg text-gray-600">Verifying payment details...</span>
+            <span className="ml-2 text-lg text-gray-600">
+              {loading ? "Verifying payment details..." : "Syncing with order system..."}
+            </span>
           </div>
         ) : error ? (
           <div className="p-4 mb-6 text-red-700 bg-red-100 border-l-4 border-red-500 rounded">
