@@ -190,7 +190,7 @@ function CustomerDashboard() {
         
           {/* Header */}
                 <div className="px-6 py-4 bg-[#704214] text-white flex justify-between items-center">
-                  <h1 className="text-xl font-bold">My Profile</h1>
+                  <h1 className="text-xl font-bold">Dashboard</h1>
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
