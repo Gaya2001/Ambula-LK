@@ -45,6 +45,8 @@ import PrivateRoute from "./components/Auth/PrivateRoute";
 import TestPayment from "./Pages/Payment/TestPayment";
 import UnauthorizedPage from "./Pages/UnauthorizedPage";
 import GoogleCallback from './Pages/Auth/GoogleCallback';
+import ForgotPasswordPage from './Pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage from './Pages/Auth/ResetPasswordPage';
 
 
 // AppContent should be inside Router to use useLocation()
@@ -175,7 +177,8 @@ const AppContent = () => {
 
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/google-callback" element={<GoogleCallback />} />
-
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
 
 
