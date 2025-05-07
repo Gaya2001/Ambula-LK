@@ -577,7 +577,7 @@ exports.orderStatusUpdate = async (req, res) => {
 
 
     if (order.paymentStatus === "Paid" && order.status === "Confirmed") {
-      await axios.post("http://localhost:5007/notify", {
+      await axios.post("http://notification-service:5007/notify", {
         customerId: order.customerId,
         orderId: order._id,
         type: "confirmation"

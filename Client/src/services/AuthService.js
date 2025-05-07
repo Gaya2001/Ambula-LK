@@ -3,14 +3,14 @@ import { AuthHTTP } from "./httpCommon-service";
 class AuthService {
   // Regular login method
   login(credentials) {
-    const apiCredentials = {...credentials};
+    const apiCredentials = { ...credentials };
     return AuthHTTP.post("/login", apiCredentials);
   }
 
   // Google login - initiates the OAuth flow
   googleLogin() {
     // Use the correct port (5001) for the auth service
-    window.location.href = "http://localhost:5001/api/auth/google";
+    window.location.href = "http://auth-service:5001/api/auth/google";
   }
 
   // Process Google login response
@@ -29,7 +29,7 @@ class AuthService {
         // Check if the role is Customer
         const responseData = response.data;
         const userRole = this.getUserRoleFromResponse(responseData);
-        
+
         // Only process login if it's a customer
         if (userRole === 'Customer') {
           return this.processGoogleLogin(response);
@@ -49,7 +49,7 @@ class AuthService {
   // Helper method to extract role from response
   getUserRoleFromResponse(data) {
     let userRole = null;
-    
+
     // Check all possible locations for role
     if (data.role) {
       userRole = data.role;
@@ -58,21 +58,21 @@ class AuthService {
     } else if (data.customer?.role) {
       userRole = data.customer.role;
     }
-    
+
     return this.normalizeRoleName(userRole);
   }
 
   // Helper to normalize role names
   normalizeRoleName(role) {
     if (!role) return null;
-    
+
     const roleStr = String(role);
-    
-    if (roleStr.toLowerCase() === 'customer' || 
-        roleStr.toLowerCase() === 'user') {
+
+    if (roleStr.toLowerCase() === 'customer' ||
+      roleStr.toLowerCase() === 'user') {
       return 'Customer';
     }
-    
+
     return roleStr;
   }
 
@@ -101,18 +101,18 @@ class AuthService {
     if (data?.token) {
       localStorage.setItem("token", data.token);
     }
-    
+
     // Handle role - check all possible locations where role might be stored
     let role = null;
-    
+
     // Direct role property
     if (data?.role) {
       role = data.role;
-    } 
+    }
     // User object
     else if (data?.user?.role) {
       role = data.user.role;
-    } 
+    }
     // Customer object (specific to customer login)
     else if (data?.customer?.role) {
       role = data.customer.role;
@@ -121,10 +121,10 @@ class AuthService {
     if (role) {
       localStorage.setItem("role", this.normalizeRoleName(role));
     }
-    
+
     // Handle user ID - check all possible locations
     let userId = null;
-    
+
     if (data?.userId) {
       userId = data.userId;
     } else if (data?.user?._id || data?.user?.id) {
@@ -132,14 +132,14 @@ class AuthService {
     } else if (data?.customer?._id || data?.customer?.id) {
       userId = data.customer._id || data.customer.id;
     }
-    
+
     if (userId) {
       localStorage.setItem("userId", userId);
     }
-    
+
     // Handle username - check all possible locations
     let username = null;
-    
+
     if (data?.username) {
       username = data.username;
     } else if (data?.user?.username || data?.user?.name) {
@@ -155,7 +155,7 @@ class AuthService {
       // Use email as fallback for username
       username = data.email.split('@')[0]; // Use part before @ as username
     }
-    
+
     if (username) {
       localStorage.setItem("username", username);
     }
