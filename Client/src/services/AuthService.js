@@ -9,7 +9,8 @@ class AuthService {
 
   // Google login - initiates the OAuth flow
   googleLogin() {
-    window.location.href = "http://localhost:4003/api/auth/google";
+    // Use the correct port (5001) for the auth service
+    window.location.href = "http://localhost:5001/api/auth/google";
   }
 
   // Process Google login response

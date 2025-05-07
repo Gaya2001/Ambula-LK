@@ -1,37 +1,40 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../../../assets/ai-generated-8733795_1280.png";
+import { User, Mail, Phone, MapPin, Clock, LogOut, Edit, Save, X } from "lucide-react";
 import logo1 from "../../../assets/Customer/c1.png";
 import customerService from "../../../services/customer-service";
 
-const CustomerProfile = ({ setCustomerData: setDashboardCustomerData }) => {
-  const [customerData, setCustomerData] = useState(null);
+const CustomerProfile = ({ setCustomerData: setDashboardCustomerData, customerData: initialCustomerData }) => {
+  const [customerData, setCustomerData] = useState(initialCustomerData || null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialCustomerData);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     username: "",
     phone: "",
-    password: "", // optional
+    password: "",
     delivery_address: "",
     city: "",
     postal_code: "",
   });
 
   const openEditModal = () => {
+    if (!customerData) return;
+    
     setFormData({
       first_name: customerData.first_name || "",
       last_name: customerData.last_name || "",
       email: customerData.email || "",
       username: customerData.username || "",
       phone: customerData.phone || "",
-      password: "",
+      password: "", // Empty by default
       delivery_address: customerData.delivery_address || "",
       city: customerData.city || "",
       postal_code: customerData.postal_code || "",
@@ -88,6 +91,13 @@ const CustomerProfile = ({ setCustomerData: setDashboardCustomerData }) => {
   };
 
   useEffect(() => {
+    // If customerData was passed as a prop, use it
+    if (initialCustomerData) {
+      setCustomerData(initialCustomerData);
+      setLoading(false);
+      return;
+    }
+
     const fetchCustomerData = async () => {
       try {
         setLoading(true);
@@ -122,176 +132,420 @@ const CustomerProfile = ({ setCustomerData: setDashboardCustomerData }) => {
     };
 
     fetchCustomerData();
-  }, [navigate, setDashboardCustomerData]);
+  }, [navigate, setDashboardCustomerData, initialCustomerData]);
 
   if (error && !showEditModal) {
-    return <p className="mt-10 text-center text-red-500">{error}</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-900 to-black">
+        <div className="p-6 bg-red-900 border border-red-800 rounded-lg shadow-lg bg-opacity-30">
+          <p className="font-medium text-red-200">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 mt-4 text-white bg-red-800 rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (loading || !customerData) {
     return (
-      <p className="mt-10 text-center text-gray-600">Loading profile...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-900 to-black">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto border-4 rounded-full border-t-amber-500 border-b-transparent border-l-transparent border-r-transparent animate-spin"></div>
+          <p className="mt-4 text-lg text-gray-300">Loading your profile...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="w-full max-w-xl px-6 py-8 mx-auto mt-10 mb-16 bg-white shadow-lg rounded-2xl">
-      <h1 className="mb-8 text-3xl font-extrabold text-center text-[#FC8A06]">
-        My Profile
-      </h1>
-      <div className="flex flex-col items-center">
-        <div className="w-32 h-32 overflow-hidden border-4 rounded-full border-[#FC8A06]">
-          <img
-            src={customerData.profile_image || logo1}
-            alt="Profile"
-            className="object-cover w-full h-full"
-          />
-        </div>
-        <h2 className="mt-4 text-2xl font-semibold text-gray-800">
-          {customerData.first_name} {customerData.last_name}
-        </h2>
-        <p className="mb-4 text-md text-[#FC8A06]">@{customerData.username}</p>
-        <div className="w-full mt-4 text-gray-700">
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Email:</span>
-            <span>{customerData.email}</span>
-          </div>
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Phone:</span>
-            <span>{customerData.phone}</span>
-          </div>
-          {customerData.delivery_address && (
-            <div className="flex justify-between py-2 border-b">
-              <span className="font-medium">Default Address:</span>
-              <span>{customerData.delivery_address}</span>
+    <div className="min-h-screen text-white bg-gradient-to-b from-blue-900 to-black">
+      <div className="container px-4 py-8 mx-auto">
+        <div className="max-w-4xl mx-auto">
+          {/* Header with background card */}
+          <div className="relative overflow-hidden rounded-t-2xl bg-gradient-to-r from-indigo-900 to-blue-900">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 w-full h-full">
+              <div className="absolute w-40 h-40 rounded-full top-10 left-20 bg-amber-500 opacity-10 blur-xl"></div>
+              <div className="absolute bg-blue-500 rounded-full bottom-10 right-20 w-60 h-60 opacity-10 blur-xl"></div>
             </div>
-          )}
-          {customerData.city && (
-            <div className="flex justify-between py-2 border-b">
-              <span className="font-medium">City:</span>
-              <span>{customerData.city}</span>
+            
+            {/* Profile header content */}
+            <div className="relative z-10 flex flex-col items-center gap-8 p-8 md:flex-row">
+              <div className="flex-shrink-0">
+                <div className="w-32 h-32 overflow-hidden border-4 rounded-full shadow-lg border-amber-500">
+                  <img
+                    src={customerData.profile_image || logo1}
+                    alt="Profile"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-3xl font-bold text-white">
+                  {customerData.first_name} {customerData.last_name}
+                </h2>
+                <p className="text-lg text-amber-400">@{customerData.username}</p>
+                
+                <div className="flex flex-wrap justify-center gap-2 mt-3 md:justify-start">
+                  
+                  <span className="px-3 py-1 text-sm bg-blue-800 bg-opacity-50 rounded-full">
+                    Member since {new Date(customerData.created_at || customerData.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-3 mt-4 md:flex-row md:mt-0">
+                <button
+                  onClick={openEditModal}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-white transition rounded-lg shadow-lg bg-amber-600 hover:bg-amber-500"
+                >
+                  <Edit size={18} />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    navigate("/login");
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-white transition bg-red-700 rounded-lg shadow-lg hover:bg-red-600"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
-          )}
-          {customerData.postal_code && (
-            <div className="flex justify-between py-2 border-b">
-              <span className="font-medium">Postal Code:</span>
-              <span>{customerData.postal_code}</span>
-            </div>
-          )}
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Member Since:</span>
-            <span>{new Date(customerData.createdAt || customerData.created_at).toLocaleDateString()}</span>
           </div>
-        </div>
-        <div className="flex gap-4 mt-8">
-          <button
-            className="px-6 py-2 font-semibold text-white transition rounded-md bg-[#FC8A06] hover:bg-[#e27600]"
-            onClick={openEditModal}
-          >
-            Edit Profile
-          </button>
-          <button
-            className="px-6 py-2 font-semibold text-white transition bg-red-600 rounded-md hover:bg-red-700"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
+          
+          {/* Main content with tabs */}
+          <div className="shadow-2xl bg-blue-950 bg-opacity-80 backdrop-blur-sm rounded-b-2xl">
+            <div className="border-b border-blue-800">
+              <div className="flex p-2 space-x-1 overflow-x-auto">
+                <button
+                  onClick={() => setActiveTab("personal")}
+                  className={`px-4 py-2 rounded-t-lg font-medium transition ${
+                    activeTab === "personal"
+                      ? "bg-blue-700 text-white"
+                      : "bg-transparent text-blue-300 hover:bg-blue-800"
+                  }`}
+                >
+                  Personal Info
+                </button>
+                <button
+                  onClick={() => setActiveTab("contact")}
+                  className={`px-4 py-2 rounded-t-lg font-medium transition ${
+                    activeTab === "contact"
+                      ? "bg-blue-700 text-white"
+                      : "bg-transparent text-blue-300 hover:bg-blue-800"
+                  }`}
+                >
+                  Contact & Address
+                </button>
+                <button
+                  onClick={() => setActiveTab("account")}
+                  className={`px-4 py-2 rounded-t-lg font-medium transition ${
+                    activeTab === "account"
+                      ? "bg-blue-700 text-white"
+                      : "bg-transparent text-blue-300 hover:bg-blue-800"
+                  }`}
+                >
+                  Account
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {/* Personal Info Tab */}
+              {activeTab === "personal" && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 text-xl font-semibold text-amber-400">
+                    <User size={20} />
+                    <h3>Personal Information</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">FIRST NAME</p>
+                      <p className="font-medium text-white">{customerData.first_name}</p>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">LAST NAME</p>
+                      <p className="font-medium text-white">{customerData.last_name}</p>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">EMAIL</p>
+                      <div className="flex items-center gap-2">
+                        <Mail size={16} className="text-blue-300" />
+                        <p className="font-medium text-white">{customerData.email}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">USERNAME</p>
+                      <p className="font-medium text-white">@{customerData.username}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Contact & Address Tab */}
+              {activeTab === "contact" && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 text-xl font-semibold text-amber-400">
+                    <MapPin size={20} />
+                    <h3>Contact & Address</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">PHONE</p>
+                      <div className="flex items-center gap-2">
+                        <Phone size={16} className="text-blue-300" />
+                        <p className="font-medium text-white">{customerData.phone || "No phone set"}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">DELIVERY ADDRESS</p>
+                      <p className="font-medium text-white">{customerData.delivery_address || "No address set"}</p>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">CITY</p>
+                      <p className="font-medium text-white">{customerData.city || "No city set"}</p>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-900 rounded-lg bg-opacity-40">
+                      <p className="mb-1 text-sm text-blue-300">POSTAL CODE</p>
+                      <p className="font-medium text-white">{customerData.postal_code || "No postal code set"}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Account Tab */}
+              {activeTab === "account" && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 text-xl font-semibold text-amber-400">
+                    <Clock size={20} />
+                    <h3>Account Information</h3>
+                  </div>
+                  
+                  <div className="p-5 bg-blue-900 rounded-lg bg-opacity-40">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div>
+                        <p className="mb-1 text-sm text-blue-300">MEMBER SINCE</p>
+                        <p className="font-medium text-white">{new Date(customerData.created_at || customerData.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="mb-1 text-sm text-blue-300">ACCOUNT STATUS</p>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                          <p className="font-medium text-white">Active</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-6 mt-6 border-t border-blue-800">
+                      <button
+                        onClick={openEditModal}
+                        className="flex items-center gap-2 px-4 py-2 text-white transition rounded-lg bg-amber-600 hover:bg-amber-500"
+                      >
+                        <Edit size={18} />
+                        Edit Profile
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Edit modal with modern design */}
       {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-6 bg-white shadow-xl rounded-2xl w-[90%] max-w-lg">
-            <h2 className="mb-4 text-xl font-bold text-[#FC8A06]">Edit Profile</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
+          <div className="bg-gradient-to-b from-blue-900 to-indigo-950 text-white shadow-2xl rounded-2xl max-h-[90vh] w-[90%] max-w-lg overflow-hidden flex flex-col">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-5 bg-blue-900 border-b border-blue-800">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-amber-400">
+                <Edit size={20} />
+                Edit Profile
+              </h2>
+              <button 
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 transition hover:text-white"
+              >
+                <X size={24} />
+              </button>
+            </div>
 
             {updateSuccess && (
-              <div className="p-3 mb-4 text-green-700 bg-green-100 rounded-md">
-                Profile updated successfully!
+              <div className="flex items-center gap-2 p-3 mx-5 mt-4 text-green-200 bg-green-900 bg-opacity-50 border border-green-700 rounded-md">
+                <div className="flex items-center justify-center w-6 h-6 bg-green-500 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p>Profile updated successfully!</p>
               </div>
             )}
 
             {error && (
-              <div className="p-3 mb-4 text-red-700 bg-red-100 rounded-md">
+              <div className="p-3 mx-5 mt-4 text-red-200 bg-red-900 bg-opacity-50 border border-red-700 rounded-md">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleUpdate}>
-              <div className="space-y-3">
-                <input
-                  name="first_name"
-                  type="text"
-                  placeholder="FIRST NAME"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                  required
-                />
-                <input
-                  name="last_name"
-                  type="text"
-                  placeholder="LAST NAME"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                  required
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="EMAIL"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                  required
-                />
-                <input
-                  name="username"
-                  type="text"
-                  placeholder="USERNAME"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                  required
-                />
-                <input
-                  name="phone"
-                  type="text"
-                  placeholder="PHONE"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                  required
-                />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="PASSWORD (Leave blank to keep unchanged)"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FC8A06]"
-                />
-              </div>
-              <div className="flex justify-end gap-4 mt-6">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-                  onClick={() => setShowEditModal(false)}
-                  disabled={updateLoading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-white rounded-md bg-[#FC8A06] hover:bg-[#e27600] disabled:bg-orange-300"
-                  disabled={updateLoading}
-                >
-                  {updateLoading ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
+            <div className="flex-1 p-5 overflow-y-auto">
+              <form onSubmit={handleUpdate}>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="block mb-1 text-sm text-blue-300">FIRST NAME</label>
+                      <input
+                        name="first_name"
+                        type="text"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-sm text-blue-300">LAST NAME</label>
+                      <input
+                        name="last_name"
+                        type="text"
+                        value={formData.last_name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 text-sm text-blue-300">EMAIL</label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 text-sm text-blue-300">USERNAME</label>
+                    <input
+                      name="username"
+                      type="text"
+                      value={formData.username}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 text-sm text-blue-300">PHONE</label>
+                    <input
+                      name="phone"
+                      type="text"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 text-sm text-blue-300">
+                      PASSWORD <span className="text-gray-400">(Leave blank to keep unchanged)</span>
+                    </label>
+                    <input
+                      name="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 text-sm text-blue-300">DELIVERY ADDRESS</label>
+                    <input
+                      name="delivery_address"
+                      type="text"
+                      value={formData.delivery_address}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="block mb-1 text-sm text-blue-300">CITY</label>
+                      <input
+                        name="city"
+                        type="text"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-sm text-blue-300">POSTAL CODE</label>
+                      <input
+                        name="postal_code"
+                        type="text"
+                        value={formData.postal_code}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 text-white bg-blue-900 bg-opacity-50 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            <div className="sticky bottom-0 z-10 flex justify-end gap-4 p-5 bg-blue-900 border-t border-blue-800">
+              <button
+                type="button"
+                className="flex items-center gap-1 px-4 py-2 text-white transition bg-gray-700 rounded-lg hover:bg-gray-600"
+                onClick={() => setShowEditModal(false)}
+                disabled={updateLoading}
+              >
+                <X size={18} />
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="flex items-center gap-1 px-4 py-2 text-white transition rounded-lg bg-amber-600 hover:bg-amber-500 disabled:bg-amber-800 disabled:opacity-50"
+                disabled={updateLoading}
+              >
+                {updateLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={18} />
+                    <span>Save Changes</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -112,6 +112,7 @@ exports.initializePayment = async (req, res) => {
 // Handle payment notification from PayHere
 // In paymentController.js - Updated handlePaymentNotification function
 
+// In paymentController.js - Updated handlePaymentNotification function
 exports.handlePaymentNotification = async (req, res) => {
   try {
     const notificationData = req.body;
@@ -124,11 +125,7 @@ exports.handlePaymentNotification = async (req, res) => {
       payhere_amount,
       payhere_currency,
       status_code,
-      md5sig,
-      method,
-      card_holder_name,
-      card_no,
-      card_expiry
+      md5sig
     } = notificationData;
 
     // 1. Validate incoming data
@@ -159,15 +156,15 @@ exports.handlePaymentNotification = async (req, res) => {
     const paymentStatus = getPaymentStatus(status_code);
     payment.status = paymentStatus;
     payment.paymentId = payment_id;
-    payment.paymentMethod = method || '';
+    payment.paymentMethod = notificationData.method || '';
     payment.paymentTimestamp = new Date();
     
     // Save card info if available (masked)
-    if (card_holder_name) {
+    if (notificationData.card_holder_name) {
       payment.cardDetails = {
-        holderName: card_holder_name,
-        maskedNumber: card_no,
-        expiry: card_expiry
+        holderName: notificationData.card_holder_name,
+        maskedNumber: notificationData.card_no,
+        expiry: notificationData.card_expiry
       };
     }
 
@@ -178,7 +175,7 @@ exports.handlePaymentNotification = async (req, res) => {
     if (status_code === '2') {
       try {
         // Construct the full order service URL
-        const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5001'}/orders/payment-update`;
+        const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5003'}/orders/payment-update`;
         console.log(`Notifying order service at ${orderServiceUrl} for order ${order_id}`);
         
         // Send a more detailed payload
@@ -187,7 +184,6 @@ exports.handlePaymentNotification = async (req, res) => {
           paymentStatus: 'Paid',
           paymentId: payment_id
         }, {
-          // Add timeout to prevent hanging
           timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
@@ -199,12 +195,10 @@ exports.handlePaymentNotification = async (req, res) => {
         console.error('Error updating order status:', err.message);
         console.error('Error details:', err.response?.data || 'No response data');
         
-        // Even with error, we acknowledge the notification to PayHere
-        // We'll implement a retry mechanism separately
-        
-        // Create a retry record or queue the update for later processing
-        console.log('Scheduling retry for order status update...');
-        // This could be implemented with a queue system or simple retry log
+        // Schedule a retry
+        setTimeout(() => {
+          retryOrderStatusUpdate(order_id, 'Paid', payment_id);
+        }, 3000); // First retry after 3 seconds
       }
     }
 
@@ -216,7 +210,6 @@ exports.handlePaymentNotification = async (req, res) => {
     res.status(500).send('Server error during notification processing');
   }
 };
-
 
 // Get payment status with customer coordinates
 exports.getPaymentStatus = async (req, res) => {
@@ -278,7 +271,7 @@ exports.updatePaymentStatus = async (req, res) => {
     // If status is success, also update the order
     if (status === 'success') {
       try {
-        const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5001'}/orders/payment-update`;
+        const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5003'}/orders/payment-update`;
         
         await axios.post(orderServiceUrl, {
           orderId,
@@ -401,6 +394,7 @@ exports.regenerateCoordinates = async (req, res) => {
 // Add this to paymentController.js
 
 // Helper function to retry failed order updates
+// Helper function to retry failed order updates
 const retryOrderStatusUpdate = async (orderId, paymentStatus, paymentId, attempts = 0) => {
   const maxRetries = 5;
   const retryDelay = 5000; // 5 seconds
@@ -411,7 +405,7 @@ const retryOrderStatusUpdate = async (orderId, paymentStatus, paymentId, attempt
   }
   
   try {
-    const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5001'}/orders/payment-update`;
+    const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5003'}/orders/payment-update`;
     
     console.log(`Retry attempt ${attempts + 1} for order ${orderId}`);
     
@@ -480,7 +474,7 @@ exports.syncPaymentWithOrder = async (req, res) => {
     
     // Try to update the order
     try {
-      const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5001'}/orders/payment-update`;
+      const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5003'}/orders/payment-update`;
       
       const response = await axios.post(orderServiceUrl, {
         orderId,
@@ -504,3 +498,58 @@ exports.syncPaymentWithOrder = async (req, res) => {
     return res.status(500).json({ message: 'Server error during sync operation' });
   }
 };
+
+
+// Manual endpoint to force update payment status
+exports.manualUpdatePaymentStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    
+    if (!orderId) {
+      return res.status(400).json({ message: 'Order ID is required' });
+    }
+    
+    const payment = await Payment.findOne({ orderId });
+    
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+    
+    // Update payment status to success
+    payment.status = 'success';
+    if (!payment.paymentTimestamp) {
+      payment.paymentTimestamp = new Date();
+    }
+    
+    await payment.save();
+    
+    // Also update the order
+    try {
+      const orderServiceUrl = `${process.env.VITE_Order_URL || 'http://localhost:5003'}/orders/payment-update`;
+      
+      await axios.post(orderServiceUrl, {
+        orderId,
+        paymentStatus: 'Paid',
+        paymentId: payment.paymentId || 'manual-update'
+      });
+      
+      console.log(`Order ${orderId} manually updated with payment status: Paid`);
+      
+      return res.status(200).json({ 
+        message: 'Payment status and order updated successfully',
+        payment
+      });
+    } catch (err) {
+      console.error('Error updating order status:', err.message);
+      return res.status(200).json({ 
+        message: 'Payment updated but order status update failed',
+        payment
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    res.status(500).json({ message: 'Server error while updating payment status' });
+  }
+};
+

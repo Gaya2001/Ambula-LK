@@ -10,6 +10,7 @@ import {
   FaSearch,
   FaUtensils
 } from "react-icons/fa";
+import logo1 from "../../assets/Customer/c1.png";
 
 import CustomerProfile from "../../components/CustomerManagement/profile/CustomerProfile";
 import OrderHistory from "../../components/CustomerManagement/profile/OrderHistory";
@@ -121,7 +122,7 @@ function CustomerDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-b from-blue-900 to-black">
       {/* Sidebar */}
       <div className="w-20 md:w-64 bg-[#0C1A39] text-white flex flex-col">
         <div className="flex items-center justify-center p-4 md:justify-start">
@@ -186,159 +187,161 @@ function CustomerDashboard() {
 
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Header */}
-        <header className="bg-[#0C1A39] shadow-sm">
-          <div className="flex items-center justify-between px-4 py-3">
-            <h1 className="text-xl font-semibold text-white-800">
-              {activeTab === "welcome" && "Welcome to Ambula.lk"}
-              {activeTab === "profile" && "My Profile"}
-              {activeTab === "history" && "Order History"}
-              {activeTab === "payment" && "Payment Methods"}
-              {activeTab === "addresses" && "Delivery Addresses"}
-              {activeTab === "notifications" && "Notifications"}
-            </h1>
-
-            <div className="flex items-center space-x-4">
-              {/* Search Bar */}
-              <form onSubmit={handleSearch} className="relative hidden md:block">
-                <input
-                  type="text"
-                  placeholder="Search for restaurants or food..."
-                  className="w-64 py-2 pl-3 pr-10 text-sm bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button
-                  type="submit"
-                  className="absolute right-0 p-2 text-gray-500 transform -translate-y-1/2 top-1/2"
-                >
-                  <FaSearch className="w-4 h-4" />
-                </button>
-              </form>
-
-              {/* Notifications */}
-              <button
-                className="relative p-1 text-gray-400 rounded-full hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                onClick={() => setActiveTab("notifications")}
-              >
-                <FaBell className="w-6 h-6" />
-                {notifications > 0 && (
-                  <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500"></span>
-                )}
-              </button>
-
-              {/* User Profile */}
-              <div className="flex items-center">
-                {customerData?.profile_image ? (
-                  <img
-                    className="object-cover border-2 border-orange-500 rounded-full h-9 w-9"
-                    src={customerData.profile_image}
-                    alt="Customer"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-200 border-2 border-orange-500 rounded-full h-9 w-9">
-                    <FaUser className="w-4 h-4 text-gray-500" />
+        
+          {/* Header */}
+                <div className="px-6 py-4 bg-[#704214] text-white flex justify-between items-center">
+                  <h1 className="text-xl font-bold">Dashboard</h1>
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 overflow-hidden rounded-full">
+                        <img 
+                          src={customerData?.profile_image || logo1} 
+                          alt="Profile" 
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {customerData?.first_name || ""} {customerData?.last_name || ""}
+                        </p>
+                        <p className="text-xs text-green-400">Online</p>
+                      </div>
+                    </div>
                   </div>
-                )}
-                <div className="hidden ml-3 md:block">
-                  <p className="text-sm font-medium text-white-800">
-                    {customerData ? `${customerData.first_name} ${customerData.last_name}` : "Loading..."}
-                  </p>
-                  <p className="text-xs text-white-500">Customer</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </header>
+       
 
         {/* Content Area */}
         <main className="flex-1 p-4 overflow-y-auto">
-          {activeTab === "welcome" && (
-            <div className="p-6 bg-white rounded-lg shadow">
-              <h2 className="mb-4 text-2xl font-bold text-gray-800">
-                Welcome, {customerData ? `${customerData.first_name}` : "Valued Customer"}!
-              </h2>
-              <p className="mb-4 text-gray-600">
-                Hungry? We've got you covered! Browse through our wide selection of restaurants and order your favorite meals delivered straight to your doorstep.
-              </p>
+        {activeTab === "welcome" && (
+  <div className="min-h-screen text-white bg-gradient-to-b from-blue-900 to-black">
+    <div className="container px-4 py-8 mx-auto">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with background card - similar to profile */}
+        <div className="relative overflow-hidden rounded-t-2xl bg-gradient-to-r from-indigo-900 to-blue-900">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute w-40 h-40 rounded-full top-10 left-20 bg-amber-500 opacity-10 blur-xl"></div>
+            <div className="absolute bg-blue-500 rounded-full bottom-10 right-20 w-60 h-60 opacity-10 blur-xl"></div>
+          </div>
+          
+          {/* Welcome header content */}
+          <div className="relative z-10 flex flex-col items-center p-8">
+            <h2 className="text-3xl font-bold text-white">
+              Welcome back, {customerData ? `${customerData.first_name}` : "Valued Customer"}!
+            </h2>
+            <p className="mt-2 text-amber-400">Ready to order some delicious food?</p>
+          </div>
+        </div>
+        
+        {/* Main content area */}
+        <div className="shadow-2xl bg-blue-950 bg-opacity-80 backdrop-blur-sm rounded-b-2xl">
 
-              {/* Current/Active Order Status (if any) */}
-              <div className="p-4 mb-8 border border-orange-200 rounded-lg bg-orange-50">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-800">Your Active Order</h3>
-                  <button
-                    className="px-3 py-1 text-sm text-orange-600 border border-orange-600 rounded-full hover:bg-orange-600 hover:text-white"
-                    onClick={() => setActiveTab("history")}
-                  >
-                    View Details
-                  </button>
-                </div>
-                <div className="flex items-center mt-4">
-                  <div className="flex items-center justify-center w-12 h-12 text-white bg-orange-500 rounded-full">
-                    <FaUtensils className="w-6 h-6" />
+{/* Quick Actions */}
+<div className="p-6 pt-0">
+            <div className="flex items-center gap-2 text-xl font-semibold text-amber-400">
+              <FaHome size={20} />
+              <h3>Quick Actions</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+              <div className="p-4 transition-all bg-blue-900 border border-blue-800 rounded-lg bg-opacity-40 hover:bg-opacity-50">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 text-white bg-blue-500 rounded-full">
+                    <FaHistory className="w-5 h-5" />
                   </div>
-                  <div className="ml-4">
-                    <p className="font-medium text-gray-800">Order #AMB23956</p>
-                    <p className="text-sm text-gray-600">Being prepared at Royal Thai Restaurant</p>
-                    <div className="w-full h-2 mt-2 bg-gray-200 rounded-full">
-                      <div className="h-2 bg-orange-500 rounded-full" style={{ width: '40%' }}></div>
-                    </div>
-                    <p className="mt-1 text-xs text-gray-500">Estimated delivery: 6:45 PM</p>
-                  </div>
+                  <h3 className="font-semibold text-white">Order Again</h3>
                 </div>
+                <p className="mt-2 text-sm text-blue-300">Quickly reorder from your past orders.</p>
+                <button
+                  className="w-full px-4 py-2 mt-4 text-white transition-all bg-blue-500 rounded-lg hover:bg-blue-600"
+                  onClick={() => setActiveTab("history")}
+                >
+                  View History
+                </button>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 mt-8 md:grid-cols-3">
-                <div className="p-4 transition-all rounded-lg bg-blue-50 hover:shadow-md">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 text-white bg-blue-500 rounded-full">
-                      <FaHistory className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-gray-800">Order Again</h3>
+              <div className="p-4 transition-all bg-blue-900 border border-blue-800 rounded-lg bg-opacity-40 hover:bg-opacity-50">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 text-white bg-purple-500 rounded-full">
+                    <FaMapMarkerAlt className="w-5 h-5" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-600">Quickly reorder from your past orders.</p>
-                  <button
-                    className="w-full px-4 py-2 mt-4 text-white transition-all bg-blue-500 rounded-lg hover:bg-blue-600"
-                    onClick={() => setActiveTab("history")}
-                  >
-                    View History
-                  </button>
+                  <h3 className="font-semibold text-white">Manage Addresses</h3>
                 </div>
+                <p className="mt-2 text-sm text-blue-300">Update or add delivery locations.</p>
+                <button
+                  className="w-full px-4 py-2 mt-4 text-white transition-all bg-purple-500 rounded-lg hover:bg-purple-600"
+                  onClick={() => setActiveTab("addresses")}
+                >
+                  My Addresses
+                </button>
+              </div>
 
-                <div className="p-4 transition-all rounded-lg bg-purple-50 hover:shadow-md">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 text-white bg-purple-500 rounded-full">
-                      <FaMapMarkerAlt className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-gray-800">Manage Addresses</h3>
+              <div className="p-4 transition-all bg-blue-900 border border-blue-800 rounded-lg bg-opacity-40 hover:bg-opacity-50">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 text-white bg-teal-500 rounded-full">
+                    <FaCreditCard className="w-5 h-5" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-600">Update or add delivery locations.</p>
-                  <button
-                    className="w-full px-4 py-2 mt-4 text-white transition-all bg-purple-500 rounded-lg hover:bg-purple-600"
-                    onClick={() => setActiveTab("addresses")}
-                  >
-                    My Addresses
-                  </button>
+                  <h3 className="font-semibold text-white">Payment Methods</h3>
                 </div>
-
-                <div className="p-4 transition-all rounded-lg bg-teal-50 hover:shadow-md">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 text-white bg-teal-500 rounded-full">
-                      <FaCreditCard className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-gray-800">Payment Methods</h3>
-                  </div>
-                  <p className="mt-2 text-sm text-gray-600">Manage your payment options.</p>
-                  <button
-                    className="w-full px-4 py-2 mt-4 text-white transition-all bg-teal-500 rounded-lg hover:bg-teal-600"
-                    onClick={() => setActiveTab("payment")}
-                  >
-                    View Methods
-                  </button>
-                </div>
+                <p className="mt-2 text-sm text-blue-300">Manage your payment options.</p>
+                <button
+                  className="w-full px-4 py-2 mt-4 text-white transition-all bg-teal-500 rounded-lg hover:bg-teal-600"
+                  onClick={() => setActiveTab("payment")}
+                >
+                  View Methods
+                </button>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Current/Active Order Status */}
+          <div className="p-6">
+            <div className="flex items-center gap-2 text-xl font-semibold text-amber-400">
+              <FaUtensils size={20} />
+              <h3>Your Active Order</h3>
+            </div>
+            
+            <div className="p-4 mt-4 bg-blue-900 border border-blue-800 rounded-lg bg-opacity-40">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 text-white rounded-full bg-amber-600">
+                    <FaUtensils className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-white">Order #AMB23956</p>
+                    <p className="text-sm text-blue-300">Being prepared at Royal Thai Restaurant</p>
+                  </div>
+                </div>
+                <button
+                  className="px-3 py-1 mt-3 text-sm border rounded-full text-amber-600 border-amber-600 hover:bg-amber-600 hover:text-white md:mt-0"
+                  onClick={() => setActiveTab("history")}
+                >
+                  View Details
+                </button>
+              </div>
+              <div className="mt-4">
+                <div className="w-full h-2 bg-blue-800 rounded-full">
+                  <div className="h-2 rounded-full bg-amber-500" style={{ width: '40%' }}></div>
+                </div>
+                <p className="mt-2 text-sm text-blue-300">Estimated delivery: 6:45 PM</p>
+              </div>
+            </div>
+          </div>
+
+          
+          
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
           {activeTab === "profile" && <CustomerProfile setCustomerData={setCustomerData} customerData={customerData} />}
           {activeTab === "history" && <OrderHistory />}

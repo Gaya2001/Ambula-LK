@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { FaCreditCard, FaPlus, FaCheckCircle } from "react-icons/fa";
+import { FaCreditCard, FaPlus, FaCheckCircle, FaTrash, FaCcVisa, FaCcMastercard, FaCcAmex } from "react-icons/fa";
 
-function PaymentMethods() {
+const PaymentMethods = () => {
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showDeclineInfo, setShowDeclineInfo] = useState(false);
 
@@ -15,106 +15,201 @@ function PaymentMethods() {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Payment Methods</h2>
-        <button className="flex items-center px-4 py-2 text-white transition-colors bg-[#FC8A06] rounded-md hover:bg-orange-700">
-          <FaPlus className="mr-2" />
-          Add Payment Method
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <div className="flex items-center">
-            <div className="p-2 mr-4 text-white bg-[#FC8A06] rounded-md">
-              <FaCreditCard className="w-6 h-6" />
+    <div className="min-h-screen text-white bg-gradient-to-b from-blue-900 to-black">
+      <div className="container px-4 py-8 mx-auto">
+        <div className="max-w-4xl mx-auto">
+          {/* Header with background card */}
+          <div className="relative overflow-hidden rounded-t-2xl bg-gradient-to-r from-indigo-900 to-blue-900">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 w-full h-full">
+              <div className="absolute w-40 h-40 rounded-full top-10 left-20 bg-amber-500 opacity-10 blur-xl"></div>
+              <div className="absolute bg-blue-500 rounded-full bottom-10 right-20 w-60 h-60 opacity-10 blur-xl"></div>
             </div>
-            <div>
-              <p className="font-medium text-gray-800">Credit & Debit Cards</p>
-              <p className="text-sm text-gray-600">Manage your payment cards</p>
+            
+            {/* Header content */}
+            <div className="relative z-10 flex flex-col items-center p-8">
+              <h2 className="text-3xl font-bold text-white">Payment Methods</h2>
+              <p className="mt-2 text-amber-400">Manage your payment options securely</p>
             </div>
           </div>
-          <button
-            onClick={toggleCardDetails}
-            className="px-3 py-1 text-sm text-[#FC8A06] transition-colors border border-orange-300 rounded-md hover:bg-blue-50"
-          >
-            {showCardDetails ? "Hide Cards" : "View Cards"}
-          </button>
-        </div>
-
-        {showCardDetails && (
-          <div className="p-4 ml-8 border border-gray-200 rounded-lg bg-gray-50">
-            <h4 className="mb-2 font-medium text-gray-800">Your Saved Cards</h4>
-            <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
-              <div className="flex items-center p-2 bg-white border border-gray-200 rounded">
-                <FaCheckCircle className="mr-2 text-green-500" />
-                <p className="text-gray-700">Visa: <span className="font-mono">4916217501611292</span></p>
-              </div>
-              <div className="flex items-center p-2 bg-white border border-gray-200 rounded">
-                <FaCheckCircle className="mr-2 text-green-500" />
-                <p className="text-gray-700">MasterCard: <span className="font-mono">5307732125531191</span></p>
-              </div>
-              <div className="flex items-center p-2 bg-white border border-gray-200 rounded">
-                <FaCheckCircle className="mr-2 text-green-500" />
-                <p className="text-gray-700">AMEX: <span className="font-mono">346781005510225</span></p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-gray-800">Additional Card Information</h4>
-              <button
-                onClick={toggleDeclineInfo}
-                className="px-3 py-1 text-xs text-gray-600 transition-colors border border-gray-300 rounded-md hover:bg-gray-100"
-              >
-                {showDeclineInfo ? "Hide Details" : "Show Details"}
+          
+          {/* Main content area */}
+          <div className="shadow-2xl bg-blue-950 bg-opacity-80 backdrop-blur-sm rounded-b-2xl">
+            {/* Add Payment Method Button */}
+            <div className="p-6">
+              <button className="flex items-center px-4 py-3 text-white transition-colors rounded-md bg-amber-600 hover:bg-amber-700">
+                <FaPlus className="mr-2" />
+                Add New Payment Method
               </button>
             </div>
 
-            {showDeclineInfo && (
-              <div className="mt-2 space-y-3">
-                <div className="p-3 bg-white border border-gray-200 rounded">
-                  <h5 className="mb-1 font-medium text-gray-700">Alternative Visa Cards</h5>
-                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
-                    <p className="text-gray-700">Card 1: <span className="font-mono text-xs">4024007194349121</span></p>
-                    <p className="text-gray-700">Card 2: <span className="font-mono text-xs">4929119799365646</span></p>
-                    <p className="text-gray-700">Card 3: <span className="font-mono text-xs">4929768900837248</span></p>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white border border-gray-200 rounded">
-                  <h5 className="mb-1 font-medium text-gray-700">Alternative MasterCard Cards</h5>
-                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
-                    <p className="text-gray-700">Card 1: <span className="font-mono text-xs">5459051433777487</span></p>
-                    <p className="text-gray-700">Card 2: <span className="font-mono text-xs">5491182243178283</span></p>
-                    <p className="text-gray-700">Card 3: <span className="font-mono text-xs">5388172137367973</span></p>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white border border-gray-200 rounded">
-                  <h5 className="mb-1 font-medium text-gray-700">Alternative AMEX Cards</h5>
-                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
-                    <p className="text-gray-700">Card 1: <span className="font-mono text-xs">370787711978928</span></p>
-                    <p className="text-gray-700">Card 2: <span className="font-mono text-xs">340701811823469</span></p>
-                    <p className="text-gray-700">Card 3: <span className="font-mono text-xs">374664175202812</span></p>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white border border-gray-200 rounded">
-                  <h5 className="mb-1 font-medium text-gray-700">Additional Cards</h5>
-                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
-                    <p className="text-gray-700">Visa: <span className="font-mono text-xs">4024007120869333</span></p>
-                    <p className="text-gray-700">MasterCard: <span className="font-mono text-xs">5237980565185003</span></p>
-                    <p className="text-gray-700">AMEX: <span className="font-mono text-xs">373433500205887</span></p>
-                  </div>
-                </div>
+            {/* Card Management Section */}
+            <div className="px-6 pb-6">
+              <div className="flex items-center gap-2 mb-4 text-xl font-semibold text-amber-400">
+                <FaCreditCard size={20} />
+                <h3>Credit & Debit Cards</h3>
               </div>
-            )}
+              
+              <div className="p-4 bg-blue-900 border border-blue-800 rounded-lg bg-opacity-40">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center w-12 h-12 text-white rounded-full bg-amber-600">
+                      <FaCreditCard className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">Saved Payment Cards</p>
+                      <p className="text-sm text-blue-300">View and manage your payment options</p>
+                    </div>
+                  </div>
+                  <button
+                    className="px-4 py-2 mt-3 text-sm border rounded-full text-amber-400 border-amber-400 hover:bg-amber-600 hover:text-white md:mt-0"
+                    onClick={toggleCardDetails}
+                  >
+                    {showCardDetails ? "Hide Cards" : "View Cards"}
+                  </button>
+                </div>
+                
+                {showCardDetails && (
+                  <div className="mt-6 space-y-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {/* Visa Card */}
+                      <div className="p-4 bg-blue-800 border border-blue-700 rounded-lg bg-opacity-40">
+                        <div className="flex justify-between">
+                          <div className="flex items-center">
+                            <FaCcVisa className="w-10 h-10 text-blue-300" />
+                            <div className="ml-3">
+                              <p className="font-medium text-white">Visa Card</p>
+                              <p className="text-sm text-blue-300">
+                                <span className="font-mono">••••</span> 1292
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <button className="p-2 text-red-400 hover:text-red-300">
+                              <FaTrash size={16} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <span className="px-2 py-1 text-xs text-green-300 bg-green-900 rounded-full bg-opacity-40">
+                            Default
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* MasterCard */}
+                      <div className="p-4 bg-blue-800 border border-blue-700 rounded-lg bg-opacity-40">
+                        <div className="flex justify-between">
+                          <div className="flex items-center">
+                            <FaCcMastercard className="w-10 h-10 text-orange-300" />
+                            <div className="ml-3">
+                              <p className="font-medium text-white">MasterCard</p>
+                              <p className="text-sm text-blue-300">
+                                <span className="font-mono">••••</span> 1191
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <button className="p-2 text-red-400 hover:text-red-300">
+                              <FaTrash size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* AMEX Card */}
+                      <div className="p-4 bg-blue-800 border border-blue-700 rounded-lg bg-opacity-40">
+                        <div className="flex justify-between">
+                          <div className="flex items-center">
+                            <FaCcAmex className="w-10 h-10 text-blue-300" />
+                            <div className="ml-3">
+                              <p className="font-medium text-white">AMEX</p>
+                              <p className="text-sm text-blue-300">
+                                <span className="font-mono">••••</span> 0225
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <button className="p-2 text-red-400 hover:text-red-300">
+                              <FaTrash size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-4 border-t border-blue-800">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-amber-400">Additional Card Information</h4>
+                        <button
+                          onClick={toggleDeclineInfo}
+                          className="px-4 py-1 text-xs text-blue-300 transition-colors border border-blue-700 rounded-full hover:bg-blue-800"
+                        >
+                          {showDeclineInfo ? "Hide Details" : "Show Details"}
+                        </button>
+                      </div>
+
+                      {showDeclineInfo && (
+                        <div className="mt-4 space-y-4">
+                          {/* Alternative Cards Section */}
+                          <div className="p-4 bg-blue-900 bg-opacity-50 border border-blue-800 rounded-lg">
+                            <h5 className="mb-2 font-medium text-amber-400">Alternative Visa Cards</h5>
+                            <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 1: <span className="font-mono text-xs text-white">••••9121</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 2: <span className="font-mono text-xs text-white">••••5646</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 3: <span className="font-mono text-xs text-white">••••7248</span></p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-blue-900 bg-opacity-50 border border-blue-800 rounded-lg">
+                            <h5 className="mb-2 font-medium text-amber-400">Alternative MasterCard Cards</h5>
+                            <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 1: <span className="font-mono text-xs text-white">••••7487</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 2: <span className="font-mono text-xs text-white">••••8283</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 3: <span className="font-mono text-xs text-white">••••7973</span></p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-blue-900 bg-opacity-50 border border-blue-800 rounded-lg">
+                            <h5 className="mb-2 font-medium text-amber-400">Alternative AMEX Cards</h5>
+                            <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 1: <span className="font-mono text-xs text-white">••••8928</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 2: <span className="font-mono text-xs text-white">••••3469</span></p>
+                              </div>
+                              <div className="p-2 bg-blue-900 border border-blue-800 rounded bg-opacity-70">
+                                <p className="text-sm text-blue-300">Card 3: <span className="font-mono text-xs text-white">••••2812</span></p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default PaymentMethods;

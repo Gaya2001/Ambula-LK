@@ -142,41 +142,6 @@ export default function Restaurants() {
       {/* Promotions */}
       <Promotions promos={systemOffers.length ? systemOffers : promos} />
 
-      {/* Smart Filters */}
-      <div className="my-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Smart Filters</h2>
-          <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 bg-[#FFFFFF10] hover:bg-[#FFFFFF20] p-2 rounded-lg transition-colors"
-          >
-            <Filter size={18} className="text-[#FC8A06]" />
-            <span>All Filters</span>
-          </button>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button className="flex items-center gap-1 px-4 py-2 bg-[#FC8A06] rounded-full text-white shadow-md shadow-[#FC8A06]/30 transition-all hover:brightness-110">
-            <span>Special Offers</span>
-          </button>
-          <button className="flex items-center gap-1 px-4 py-2 bg-[#FFFFFF10] rounded-full text-white hover:bg-[#FFFFFF20] transition-colors">
-            <span>Delivery Fee</span>
-            <ChevronRight size={16} className="text-[#83858E]" />
-          </button>
-          <button className="px-4 py-2 bg-[#FFFFFF10] rounded-full text-white hover:bg-[#FFFFFF20] transition-colors">
-            <span>Under 30 min</span>
-          </button>
-          <button className="flex items-center gap-1 px-4 py-2 bg-[#FFFFFF10] rounded-full text-white hover:bg-[#FFFFFF20] transition-colors">
-            <Star size={16} className="text-[#FC8A06]" />
-            <span>Top Rated</span>
-          </button>
-          <button className="flex items-center gap-1 px-4 py-2 bg-[#FFFFFF10] rounded-full text-white hover:bg-[#FFFFFF20] transition-colors">
-            <span>Price Range</span>
-            <ChevronRight size={16} className="text-[#83858E]" />
-          </button>
-        </div>
-      </div>
-
       <div className="text-xs text-[#83858E] mb-6">
         Additional fees may apply.{" "}
         <span className="underline cursor-pointer hover:text-[#FC8A06]">

@@ -18,6 +18,11 @@ class OffersService {
     return HTTP.put(`/offers/${id}`,data)
 
   }
+  deleteOffer(id){
+    console.log("hereeee")
+    return HTTP.delete(`/offers/${id}`);
+
+  }
 }
 
 export default new OffersService();

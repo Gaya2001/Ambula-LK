@@ -575,6 +575,16 @@ exports.orderStatusUpdate = async (req, res) => {
     // Save the updated order
     await order.save();
 
+
+    if (order.paymentStatus === "Paid" && order.status === "Confirmed") {
+      await axios.post("http://localhost:5007/notify", {
+        customerId: order.customerId,
+        orderId: order._id,
+        type: "confirmation"
+      });
+    }
+
+
     // Return the updated order data as the response
     return res.status(200).json({ message: 'Order status updated successfully', order });
   } catch (err) {

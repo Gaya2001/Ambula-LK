@@ -4,7 +4,9 @@ const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs"); // Add bcrypt to verify the password
 const Notification = require("../models/Notification")
 
-
+const RESTAURANT_BASE_URL = process.env.RESTAURANT_BASE_URL;
+const CUSTOMER_BASE_URL = process.env.CUSTOMER_SERVICE_URL;
+const DELIVERY_BASE_URL = process.env.DELIVERY_SERVICE_URL;
 
 const registerAdmin = async (req, res) => {
     try {
@@ -148,7 +150,7 @@ const registerAdmin = async (req, res) => {
 const getAllRestaurantOwners = async (req, res) => {
   try {
     // Replace with the actual URL of your Restaurant-Service
-    const restaurantServiceURL = "http://localhost:4000/api/restaurant-owners/"; // example endpoint
+    const restaurantServiceURL = "http://localhost:5005/api/restaurant-owners/"; // example endpoint
 
     const response = await axios.get(restaurantServiceURL);
 
@@ -167,7 +169,7 @@ const getAllRestauants = async(req, res)=>{
 
   try {
     // Replace with the actual URL of your Restaurant-Service
-    const restaurantServiceURL = "http://localhost:4000/api/restaurant/all"; 
+    const restaurantServiceURL = `${RESTAURANT_BASE_URL}`; 
 
     const response = await axios.get(restaurantServiceURL);
 
@@ -184,7 +186,7 @@ const getAllRestauants = async(req, res)=>{
 const approveRestaurant = async (req, res) => {
   try {
     const { restaurantId } = req.params;
-    const restaurantServiceURL = `http://localhost:4000/api/restaurant/${restaurantId}`; 
+    const restaurantServiceURL = `${RESTAURANT_BASE_URL}/${restaurantId}`; 
 
     // Fetch the restaurant first
     const response = await axios.get(restaurantServiceURL);
@@ -210,10 +212,12 @@ const approveRestaurant = async (req, res) => {
 };
 
 const getCustomers = async (req, res) => {
-  const customerServiceURL = "http://localhost:9000/api/customers/";
+  const customerServiceURL = `${CUSTOMER_BASE_URL}`;
 
+  console.log("customerServiceURL : ",customerServiceURL);
   try {
     const response = await axios.get(customerServiceURL);
+
     const customers = response.data;
 
     if (!customers || customers.length === 0) {
@@ -229,7 +233,7 @@ const getCustomers = async (req, res) => {
 
 const getDrivers = async(req, res) => {
 
-  const driverServiceURL = "http://localhost:3001/api/driver/";
+  const driverServiceURL = `${DELIVERY_BASE_URL}`;
 
   try {
     const response = await axios.get(driverServiceURL);
