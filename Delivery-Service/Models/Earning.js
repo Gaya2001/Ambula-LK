@@ -1,4 +1,4 @@
-// models/earnings.model.js
+// models/Earning.js
 const mongoose = require('mongoose');
 
 const earningsSchema = new mongoose.Schema({
@@ -7,20 +7,15 @@ const earningsSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    order: {
+    deliveryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order',
-        required: true
+        ref: 'Delivery'
     },
-    amount: {
-        type: Number,
-        required: true
-    },
-    tip: {
+    bonus: {
         type: Number,
         default: 0
     },
-    bonus: {
+    tips: {
         type: Number,
         default: 0
     },
@@ -34,13 +29,9 @@ const earningsSchema = new mongoose.Schema({
         default: 'pending'
     },
     paymentDate: {
-        type: Date
-    },
-    deliveryDate: {
         type: Date,
-        required: true,
         default: Date.now
-    }
+    },
 }, {
     timestamps: true
 });

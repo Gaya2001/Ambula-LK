@@ -9,6 +9,7 @@ const authRoutes = require('./Routes/AuthRoutes');
 const driverRoutes = require('./Routes/DriverRoutes');
 const vehicleRoutes = require('./Routes/VehicleRoutes');
 const orderRoutes = require('./Routes/OrderRoute');
+const DeliveryRoutes = require('./Routes/DeliveryRoutes');
 const earningsRoutes = require('./Routes/EarningRoutes');
 
 // Load environment variables
@@ -18,7 +19,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+    origin: "*",
+    credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -37,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/driver', driverRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/delivery', DeliveryRoutes);
 app.use('/api/earnings', earningsRoutes);
 
 // Error handling middleware

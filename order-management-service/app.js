@@ -5,7 +5,15 @@ const cors = require("cors");
 const orderRoutes = require("./routes/orderRoutes.js");
 
 const app = express();
-app.use(cors());
+
+// Middleware
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+
 app.use(express.json());
 
 // app.js

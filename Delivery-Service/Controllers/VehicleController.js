@@ -48,37 +48,87 @@ exports.getVehicle = async (req, res) => {
 
 
 
+
 // Update vehicle details
 exports.updateVehicle = async (req, res) => {
     try {
-        const updates = Object.keys(req.body);
-        const allowedUpdates = ['vehicleType', 'vehicleModel', 'manufactureYear', 'licensePlate'];
+        const {
+            vehicleModel,
+            manufactureYear,
+            licensePlate,
+        } = req.body;
 
-        // Check if updates are valid
-        const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-        if (!isValidOperation) {
-            return res.status(400).json({ message: 'Invalid updates' });
-        }
+        // Find the vehicle document
+        const vehicleWithUser = await VehicleWithUser.findOne({ _id: req.user._id });
 
-        const vehicle = await VehicleWithUser.findOne({ driver: req.user._id });
-
-        if (!vehicle) {
+        if (!vehicleWithUser) {
             return res.status(404).json({ message: 'Vehicle not found' });
         }
 
-        // Apply updates
-        updates.forEach(update => vehicle[update] = req.body[update]);
-        await vehicle.save();
+        // Update vehicle details
+        if (vehicleModel) vehicleWithUser.vehicle.vehicleModel = vehicleModel;
+        if (manufactureYear) vehicleWithUser.vehicle.manufactureYear = manufactureYear;
+        if (licensePlate) vehicleWithUser.vehicle.licensePlate = licensePlate;
+
+
+        const getFile = (fieldname) => {
+            if (!req.files) return null;
+
+            // If req.files is an array
+            if (Array.isArray(req.files)) {
+                return req.files.find(f =>
+                    f.fieldname === fieldname ||
+                    f.fieldname === `${fieldname}`
+                );
+            }
+
+            // If req.files is an object with field name keys
+            if (req.files[fieldname]) {
+                return Array.isArray(req.files[fieldname])
+                    ? req.files[fieldname][0]
+                    : req.files[fieldname];
+            }
+
+            // Check for tab-suffixed field name
+            const tabFieldname = `${fieldname}`;
+            if (req.files[tabFieldname]) {
+                return Array.isArray(req.files[tabFieldname])
+                    ? req.files[tabFieldname][0]
+                    : req.files[tabFieldname];
+            }
+
+            return null;
+        };
+
+
+
+        const frontViewImage = getFile('frontViewImage');
+        if (frontViewImage) {
+            const frontViewUrl = await uploadToCloudinary(frontViewImage);
+            vehicleWithUser.vehicle.images.frontView = frontViewUrl;
+        }
+
+        const sideViewImage = getFile('sideViewImage');
+        if (sideViewImage) {
+            const sideViewUrl = await uploadToCloudinary(sideViewImage);
+            vehicleWithUser.vehicle.images.sideView = sideViewUrl;
+        }
+
+        // Save the updated vehicle document
+        const updatedVehicle = await vehicleWithUser.save();
 
         res.json({
             message: 'Vehicle updated successfully',
-            vehicle
+            vehicle: updatedVehicle // Return the updated vehicle data
         });
     } catch (error) {
         console.error('Error in updateVehicle:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
+
 
 
 exports.VehicleDetailsSignUp = async (req, res) => {

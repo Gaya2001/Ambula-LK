@@ -67,21 +67,14 @@ class DeliveryRiderService {
         });
     }
 
-    GetVehicleDetails(data) {
-        return DeliveryRiderHTTP.get("/vehicle/Get", data, {
+    GetVehicleDetails() {
+        return DeliveryRiderHTTP.get("/vehicle/Get", {
             headers: {
                 "Content-Type": "application/json",
             }
         });
     }
 
-    UpdateVehicleDetails(data) {
-        return DeliveryRiderHTTP.put("/vehicle/EditVehicleDetails", data, {
-            headers: {
-                "Content-Type": "Multipart/form-data",
-            }
-        });
-    }
 
     GetDeliveryDetails(data) {
         return DeliveryRiderHTTP.get("/delivery/getDeliveryById", data, {
@@ -106,6 +99,31 @@ class DeliveryRiderService {
             }
         });
     }
+
+    fetchEarningsData(data) {
+        return DeliveryRiderHTTP.get("/earnings/summary", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
+    DriversAssign(data) {
+        return DeliveryRiderHTTP.post("/orders/DriverAssign", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
+    DriverEarningCalculation(data) {
+        return DeliveryRiderHTTP.post("/earnings/record", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
 
 
 
