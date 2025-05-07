@@ -71,7 +71,7 @@ exports.updateDriver = async (req, res) => {
         if (firstName) driver.user.firstName = firstName;
         if (lastName) driver.user.lastName = lastName;
         if (email) driver.user.email = email;
-        if (password) driver.user.password = await bcrypt.hash(password, 8);
+        if (password) driver.user.password = password;
         if (mobile) driver.user.mobile = mobile;
         if (age) driver.user.age = age;
         if (gender) driver.user.gender = gender;

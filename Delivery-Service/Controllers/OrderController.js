@@ -6,7 +6,7 @@ const haversineDistance = require('../Utils/DistanceCalculation');
 const DriverAssign = async (req, res) => {
     try {
         console.log('Fetching Orders...');
-        const OrdersResponse = await axios.get('http://localhost:5001/orders/DeliveryPerson/GetAllOrders');
+        const OrdersResponse = await axios.get('http://localhost:5003/orders/DeliveryPerson/GetAllOrders');
         const PaidOrders = Array.isArray(OrdersResponse.data.status)
             ? OrdersResponse.data.status.filter(order => order.paymentStatus === "Paid" && order.status === "Confirmed")
             : [];
@@ -23,7 +23,7 @@ const DriverAssign = async (req, res) => {
             let restaurant;
             try {
                 // Fetch restaurant data
-                const restaurantResponse = await axios.get(`http://localhost:4000/api/restaurant/${restaurantId}`);
+                const restaurantResponse = await axios.get(`http://localhost:5005/api/restaurant/${restaurantId}`);
                 restaurant = restaurantResponse.data;
                 console.log('Successfully fetched restaurant data.');
             } catch (err) {
@@ -85,27 +85,6 @@ const DriverAssign = async (req, res) => {
                     totalDistance: shortestDistance, // Save total distance
                 };
 
-                // nearestDriver.user.available = false; // Mark the driver as unavailable
-                // try {
-                //     await nearestDriver.save();
-                //     console.log(`Driver ${nearestDriver._id} marked as unavailable.`);
-                // } catch (err) {
-                //     console.error('Error updating driver availability:', err.message);
-                // }
-
-                // Order status update
-
-                try {
-                    const OrderResponse = await axios.patch(`http://localhost:5001/orders/${Order._id}/status`, { status: "Driver Assigned" });
-                    if (OrderResponse.status === 200) {
-                        console.log(`Order ${Order._id} status updated to "Driver Assigned".`);
-                    } else {
-                        console.log(`Failed to update status for Order ${Order._id}`);
-                    }
-                } catch (err) {
-                    console.error('Error updating order status:', err.message);
-                }
-
 
 
 
@@ -153,9 +132,11 @@ const getDeliveryById = async (req, res) => {
 const updateDeliveryStatus = async (req, res) => {
     try {
 
-        const { status } = req.body;
+        const { deliveryId, status } = req.body;
 
-        let delivery = await Delivery.findOne({ driverid: req.user._id });
+        console.log('Updating delivery status:', deliveryId, status);
+
+        let delivery = await Delivery.findOne({ _id: deliveryId });
 
         if (!delivery) {
             return res.status(404).json({ message: 'Delivery not found' });

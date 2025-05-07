@@ -121,10 +121,13 @@ passport.deserializeUser((user, done) => {
 });
 
 // Middleware
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true // Allow cookies to be sent with requests
-}));
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+
 app.use(bodyParser.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 
@@ -137,15 +140,20 @@ app.get("/", (req, res) => {
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("🔍 Login request received:", req.body); // Log the request body for debugging
+
+
+
+
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
   const services = [
-    { name: "Admin", url: "http://localhost:4001/api/admin" },
-    { name: "RestaurantOwner", url: "http://localhost:4000/api/restaurant-owners" },
-    { name: "DeliveryPerson", url: "http://localhost:3001/api/driver/getAll" },
-    { name: "Customer", url: "http://localhost:9000/api/customers" }
+    // { name: "Admin", url: "http://localhost:4001/api/admin" },
+    // { name: "RestaurantOwner", url: "http://restaurant-service:5005/api/restaurant-owners" },
+    { name: "DeliveryPerson", url: "http://localhost:5002/api/driver/getAll" },
+    // { name: "Customer", url: "http://user-service:5006/api/customers" }
   ];
 
   try {

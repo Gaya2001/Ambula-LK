@@ -104,12 +104,23 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
                 return 'pending'; // Status for new/pending orders
             case 'Accepted':
                 return 'Accepted'; // Status for active/accepted orders
-            case 'completed':
             case 'delivered':
                 return 'completed'; // Status for completed orders
             default:
-                return 'pending'; // Default fallback
+                return apiStatus;
         }
+    };
+
+    // Function to handle closing the order detail modal and resetting state
+    const handleCloseOrderDetail = () => {
+        setShowOrderDetail(false);
+        // Add a small delay before clearing the selectedOrder to ensure smooth animations
+        setTimeout(() => {
+            setSelectedOrder(null);
+            // Also clear any success/error messages
+            setSuccess('');
+            setError('');
+        }, 300);
     };
 
     const AcceptOrder = async () => {
@@ -119,22 +130,35 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
         setError('');
 
         try {
+            // Store order ID reference locally to avoid any state changes during the operation
+            const currentOrderId = selectedOrder.id;
+            const currentDeliveryId = selectedOrder.deliveryId;
+
+            console.log("Current Delivery ID:", currentDeliveryId);
+
+
+            // Update delivery status
             const response = await DeliveryRiderService.UpdateDeliveryStatus({
-                deliveryId: selectedOrder.deliveryId, // Use deliveryId for the API call
+                deliveryId: currentDeliveryId,
                 status: 'Accepted',
             });
 
+            // Make driver unavailable
             await MakeDriverUnavailable(setLoading, setSuccess, setError);
 
+            // Update order status
+            await OrderService.UpdateOrderStatus(currentOrderId, 'Driver Assigned');
+
+            // Update the order status in the orders state
             setOrders(prevOrders => {
                 return prevOrders.map(order =>
-                    order.id === selectedOrder.id ? { ...order, status: 'Accepted' } : order
+                    order.id === currentOrderId ? { ...order, status: 'Accepted' } : order
                 );
             });
 
             setSuccess("Order accepted successfully!");
             // Close the modal after successful acceptance
-            setTimeout(() => setShowOrderDetail(false), 1500);
+            setTimeout(() => handleCloseOrderDetail(), 1500);
         } catch (err) {
             console.error("Error accepting order:", err);
             setError("Failed to accept the order. Please try again.");
@@ -150,22 +174,34 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
         setError('');
 
         try {
+            // Store order ID reference locally
+            const currentOrderId = selectedOrder.id;
+            const currentDeliveryId = selectedOrder.deliveryId;
+
+            console.log("Current Delivery ID:", currentDeliveryId);
+
+            // Update delivery status
             const response = await DeliveryRiderService.UpdateDeliveryStatus({
-                deliveryId: selectedOrder.deliveryId, // Use deliveryId for the API call
+                deliveryId: currentDeliveryId,
                 status: 'delivered',
             });
 
-
+            // Make driver available
             await MakeDriverAvailable(setLoading, setSuccess, setError);
 
+            // Update order status
+            await OrderService.UpdateOrderStatus(currentOrderId, 'Delivered');
+
+            // Update local state
             setOrders(prevOrders => {
                 return prevOrders.map(order =>
-                    order.id === selectedOrder.id ? { ...order, status: 'completed' } : order
+                    order.id === currentOrderId ? { ...order, status: 'completed' } : order
                 );
             });
+
             setSuccess("Order marked as delivered successfully!");
             // Close the modal after successful delivery
-            setTimeout(() => setShowOrderDetail(false), 1500);
+            setTimeout(() => handleCloseOrderDetail(), 1500);
         } catch (err) {
             console.error("Error marking order as delivered:", err);
             setError("Failed to mark the order as delivered. Please try again.");
@@ -180,28 +216,30 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
         setError('');
 
         try {
-            // First update order status back to confirmed (so restaurant knows it needs another driver)
-            await OrderService.UpdateOrderStatus({
-                orderId: selectedOrder.id,
-                status: 'Confirmed',
-            });
+            // Store order ID reference locally
+            const currentOrderId = selectedOrder.id;
+            const currentDeliveryId = selectedOrder.deliveryId;
 
-            // Then decline the delivery
+            // Update delivery status to cancelled
             await DeliveryRiderService.UpdateDeliveryStatus({
-                deliveryId: selectedOrder.deliveryId,
-                status: 'declined',
+                deliveryId: currentDeliveryId,
+                status: 'cancelled',
             });
 
+            // Update order status
+            await OrderService.UpdateOrderStatus(currentOrderId, 'Confirmed');
+
+            // Make driver available
             await MakeDriverAvailable(setLoading, setSuccess, setError);
 
             // Remove this order from the list
             setOrders(prevOrders => {
-                return prevOrders.filter(order => order.id !== selectedOrder.id);
+                return prevOrders.filter(order => order.id !== currentOrderId);
             });
 
             setSuccess("Order declined successfully");
             // Close the modal after successful decline
-            setTimeout(() => setShowOrderDetail(false), 1500);
+            setTimeout(() => handleCloseOrderDetail(), 1500);
         } catch (err) {
             console.error("Error declining order:", err);
             setError("Failed to decline the order. Please try again.");
@@ -227,6 +265,7 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
         // Pass location data to NavigationContent through parent component
         setNavigationData({
             orderId: order.id,
+            deliveryId: order.deliveryId,
             customer: order.customer,
             customerPhone: order.customerPhone,
             pickup: order.pickup,
@@ -243,8 +282,8 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
         // Switch to navigation tab
         setActiveTab('navigation');
 
-        // Close the modal
-        setShowOrderDetail(false);
+        // Close the modal and clear selectedOrder
+        handleCloseOrderDetail();
     };
 
     // Status badge component for better reuse
@@ -449,7 +488,7 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setShowOrderDetail(false)}
+                        onClick={handleCloseOrderDetail}
                     >
                         <motion.div
                             className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
@@ -464,12 +503,10 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
                                     <p className="text-sm text-gray-500 mt-1">{selectedOrder.restaurant}</p>
                                 </div>
                                 <div className="text-right">
-
-
                                 </div>
                                 <button
                                     className="bg-white text-gray-500 p-2 rounded-full hover:bg-gray-100 hover:text-gray-700 transition-colors ml-4"
-                                    onClick={() => setShowOrderDetail(false)}
+                                    onClick={handleCloseOrderDetail}
                                 >
                                     <FaTimes size={16} />
                                 </button>
@@ -582,11 +619,6 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
                                                 <FaTimes className="mr-2" />
                                                 {loading ? 'Processing...' : 'Decline'}
                                             </button>
-
-
-
-
-
 
                                             <button
                                                 onClick={() => AcceptOrder()}

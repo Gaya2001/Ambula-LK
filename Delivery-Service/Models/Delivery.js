@@ -30,6 +30,10 @@ const DeliverySchema = new mongoose.Schema({
         type: Number, // Store distance in kilometers
         required: true
     },
+    CustomerAdress: {
+        type: String,
+        default: null,
+    },
     Date: {
         type: Date,
         default: Date.now,

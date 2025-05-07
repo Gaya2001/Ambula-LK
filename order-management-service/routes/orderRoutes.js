@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const authenticate = require("../middleware/customerAuth.js");
 
-const { 
-  placeOrder, 
-  updateOrderStatus, 
-  getOrderStatus, 
+const {
+  placeOrder,
+  updateOrderStatus,
+  getOrderStatus,
   getCustomerOrders,
   getOrderById,
   updatePaymentStatus,
@@ -13,7 +13,9 @@ const {
   deleteOrder,
   getIncome,
   sendOrderToRestaurant,
-  orderStatusUpdate
+  orderStatusUpdate,
+  GetAllOrders,
+  GetOrderIdForDeliveryRider,
 } = require("../controllers/orderController.js");
 
 // No middleware needed - orders can be placed without authentication
@@ -40,9 +42,15 @@ router.put("/:id", authenticate, updateOrder);
 // Add new routes for deleting orders
 router.delete("/:id", authenticate, deleteOrder);
 
-router.post("/getIncome/:restaurantId",getIncome);
+router.post("/getIncome/:restaurantId", getIncome);
 
 router.get("/restaurantOrders/:restaurantId", sendOrderToRestaurant);
-router.put("/status/update/:orderId",orderStatusUpdate)
+router.put("/status/update/:orderId", orderStatusUpdate)
+
+
+router.get("/DeliveryPerson/GetAllOrders", GetAllOrders); // Get all orders for a Delivery Person (Gayashan)
+
+
+router.get("/DeliveryPerson/GetOrderById/:id", GetOrderIdForDeliveryRider);  // For the Delivery Person Map (Gayashan)
 
 module.exports = router;

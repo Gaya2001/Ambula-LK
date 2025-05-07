@@ -8,9 +8,15 @@ import {
     FaStore,
     FaUser,
     FaExchangeAlt,
-    FaRoute
+    FaRoute,
+    FaLocationArrow
 } from 'react-icons/fa';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, Marker, InfoWindow } from '@react-google-maps/api';
+
+import OrderService from '../../../services/order-service';
+import DeliveryRiderService from '../../../services/DeliveryRider-service';
+import { MakeDriverAvailable } from '../DeliveryServices/DeliveryAvailabilty';
+
 
 // Replace with your actual Google Maps API key
 const GOOGLE_MAPS_API_KEY = 'AIzaSyBi4Wz0qEqvCXOoaI3G9GcYEFmIBzx870g';
@@ -31,10 +37,19 @@ function NavigationContent({ orderData }) {
     const [distanceInfo, setDistanceInfo] = useState({ distance: '', duration: '' });
     const [deliveryStage, setDeliveryStage] = useState('goingToRestaurant'); // goingToRestaurant, atRestaurant, goingToCustomer, atCustomer, delivered
     const locationWatchId = useRef(null);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState('');
+    const [error, setError] = useState('');
+    const [autoFollowMode, setAutoFollowMode] = useState(false); // Default to OFF
+    const userHasMovedMap = useRef(false); // Track if user has manually moved the map
+
+
+
 
     // Default order data if none provided
     const currentOrder = orderData || {
         id: 'ORD-5675',
+        deliveryid: 'DEL-1234',
         customer: 'David Brown',
         pickup: '555 Market St',
         dropoff: '777 Home Ave',
@@ -46,6 +61,9 @@ function NavigationContent({ orderData }) {
         dropoffLatitude: '6.0105569999665125',
         dropoffLongitude: '80.26322751821459',
     };
+
+    console.log("Current Order:", currentOrder);
+
 
     // Convert string coordinates to numbers
     const pickupLocation = {
@@ -90,7 +108,7 @@ function NavigationContent({ orderData }) {
                 { enableHighAccuracy: true }
             );
 
-            // Set up continuous tracking
+            // Set up continuous tracking with reduced frequency
             locationWatchId.current = navigator.geolocation.watchPosition(
                 (position) => {
                     setDriverLocation({
@@ -99,7 +117,11 @@ function NavigationContent({ orderData }) {
                     });
                 },
                 (error) => console.error("Location watch error:", error),
-                { enableHighAccuracy: true, maximumAge: 10000 }
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 10000,
+                    timeout: 10000 // Longer timeout to reduce update frequency
+                }
             );
         } else {
             // Fallback for browsers without geolocation
@@ -118,7 +140,7 @@ function NavigationContent({ orderData }) {
         };
     }, [pickupLocation.lat, pickupLocation.lng]);
 
-    // Calculate route when driver location or destination changes
+    // Calculate route when delivery stage changes, but NOT when driver location changes
     useEffect(() => {
         if (!isLoaded || !driverLocation) return;
 
@@ -151,22 +173,108 @@ function NavigationContent({ orderData }) {
                             setDeliveryStage('atCustomer');
                         }
                     }
+
+                    // Only center the map on the first load or if auto-follow is enabled
+                    // AND the user hasn't manually moved the map
+                    if (autoFollowMode && mapInstance && !userHasMovedMap.current) {
+                        mapInstance.panTo(driverLocation);
+                    }
                 } else {
                     console.error(`Directions request failed: ${status}`);
                 }
             }
         );
-    }, [isLoaded, driverLocation, deliveryStage, pickupLocation, dropoffLocation]);
+    }, [isLoaded, deliveryStage, autoFollowMode]);
+
+    // Separate effect to update directions when driver location changes
+    // This doesn't move the map center
+    useEffect(() => {
+        if (!isLoaded || !driverLocation || !mapInstance) return;
+
+        const destination = getCurrentDestination();
+        const directionsService = new window.google.maps.DirectionsService();
+
+        directionsService.route(
+            {
+                origin: driverLocation,
+                destination: destination,
+                travelMode: window.google.maps.TravelMode.DRIVING,
+            },
+            (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK) {
+                    setDirections(result);
+
+                    // Extract distance and duration
+                    const leg = result.routes[0].legs[0];
+                    setDistanceInfo({
+                        distance: leg.distance.text,
+                        duration: leg.duration.text
+                    });
+
+                    // Only move the map if auto-follow is enabled AND user hasn't manually moved the map
+                    if (autoFollowMode && !userHasMovedMap.current) {
+                        mapInstance.panTo(driverLocation);
+                    }
+                }
+            }
+        );
+    }, [driverLocation, isLoaded]);
 
     // Handle pickup confirmation - CRITICAL FIX: This switches the navigation to customer
-    const confirmPickup = () => {
-        setDeliveryStage('goingToCustomer');
-        setDirections(null); // Clear directions to force recalculation
+    const confirmPickup = async () => {
+        setLoading(true);
+        try {
+            setDeliveryStage('goingToCustomer');
+            setDirections(null); // Clear directions to force recalculation
+
+            // Update delivery status
+            const response = await DeliveryRiderService.UpdateDeliveryStatus({
+                deliveryId: currentOrder.deliveryId,
+                status: 'picked',
+            });
+
+
+            // Update order status
+            await OrderService.UpdateOrderStatus(currentOrder.orderId, 'Picked The Order');
+
+            setSuccess('Pickup confirmed successfully!');
+
+            // Reset user movement flag to allow an initial centering after route change
+            userHasMovedMap.current = false;
+        } catch (err) {
+            console.error("Error confirming pickup:", err);
+            setError("Failed to confirm pickup. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Handle delivery confirmation
-    const confirmDelivery = () => {
-        setDeliveryStage('delivered');
+    const confirmDelivery = async () => {
+        setLoading(true);
+        try {
+            setDeliveryStage('delivered');
+
+            // Update delivery status
+            const response = await DeliveryRiderService.UpdateDeliveryStatus({
+                deliveryId: currentOrder.deliveryId,
+                status: 'delivered',
+            });
+
+            await MakeDriverAvailable(setLoading, setSuccess, setError);
+
+
+
+            // Update order status
+            console.log("Order ID:", currentOrder.orderId);
+            await OrderService.UpdateOrderStatus(currentOrder.orderId, 'Delivered');
+
+            setSuccess('Delivery confirmed successfully!');
+        } catch (err) {
+            console.error("Error confirming delivery:", err);
+            setError("Failed to confirm delivery. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Recenter map on driver
@@ -174,7 +282,23 @@ function NavigationContent({ orderData }) {
         if (mapInstance && driverLocation) {
             mapInstance.panTo(driverLocation);
             mapInstance.setZoom(15);
+
+            // Set auto-follow ON when manually recentering
+            setAutoFollowMode(true);
+
+            // Reset the user movement flag
+            userHasMovedMap.current = false;
         }
+    };
+
+    // Handle map user interaction
+    const handleMapDragStart = () => {
+        userHasMovedMap.current = true;
+        setAutoFollowMode(false);
+    };
+
+    const handleMapZoomChanged = () => {
+        userHasMovedMap.current = true;
     };
 
     // Map container style
@@ -191,6 +315,7 @@ function NavigationContent({ orderData }) {
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: true,
+        gestureHandling: 'greedy', // Makes it easier to navigate the map with touch
     };
 
     // Error fallback
@@ -223,6 +348,9 @@ function NavigationContent({ orderData }) {
                                 zoom={15}
                                 options={mapOptions}
                                 onLoad={(map) => setMapInstance(map)}
+                                onDragStart={handleMapDragStart}
+                                onZoomChanged={handleMapZoomChanged}
+                                onClick={() => userHasMovedMap.current = true}
                             >
                                 {/* Direction path */}
                                 {directions && (
@@ -352,15 +480,33 @@ function NavigationContent({ orderData }) {
                             <div className="absolute top-20 right-4 bg-white rounded-lg shadow-lg p-2 z-10">
                                 <button
                                     onClick={recenterMap}
-                                    className="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm w-full"
+                                    className="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm w-full mb-2"
                                 >
-                                    <FaRoute className="mr-2" /> Re-center Map
+                                    <FaLocationArrow className="mr-2" /> Center on Me
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setAutoFollowMode(!autoFollowMode);
+                                        if (!autoFollowMode) {
+                                            // If turning on auto-follow, immediately center on driver
+                                            if (mapInstance && driverLocation) {
+                                                mapInstance.panTo(driverLocation);
+                                                userHasMovedMap.current = false;
+                                            }
+                                        }
+                                    }}
+                                    className={`flex items-center justify-center px-3 py-2 ${autoFollowMode ? 'bg-green-500' : 'bg-gray-500'
+                                        } text-white rounded-lg hover:opacity-90 transition-colors text-sm w-full mb-2`}
+                                >
+                                    <FaRoute className="mr-2" />
+                                    {autoFollowMode ? 'Auto-Follow: ON' : 'Auto-Follow: OFF'}
                                 </button>
 
                                 {deliveryStage === 'atRestaurant' && (
                                     <button
                                         onClick={confirmPickup}
-                                        className="flex items-center justify-center px-3 py-2 mt-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm w-full"
+                                        className="flex items-center justify-center px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm w-full"
                                     >
                                         <FaCheckCircle className="mr-2" /> Confirm Pickup
                                     </button>
@@ -369,7 +515,7 @@ function NavigationContent({ orderData }) {
                                 {deliveryStage === 'atCustomer' && (
                                     <button
                                         onClick={confirmDelivery}
-                                        className="flex items-center justify-center px-3 py-2 mt-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm w-full"
+                                        className="flex items-center justify-center px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm w-full"
                                     >
                                         <FaCheckCircle className="mr-2" /> Confirm Delivery
                                     </button>
@@ -378,7 +524,7 @@ function NavigationContent({ orderData }) {
                                 {(deliveryStage === 'goingToRestaurant' || deliveryStage === 'goingToCustomer') && (
                                     <button
                                         onClick={() => setDeliveryStage(deliveryStage === 'goingToRestaurant' ? 'atRestaurant' : 'atCustomer')}
-                                        className="flex items-center justify-center px-3 py-2 mt-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm w-full"
+                                        className="flex items-center justify-center px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm w-full"
                                     >
                                         <FaExchangeAlt className="mr-2" /> I've Arrived
                                     </button>

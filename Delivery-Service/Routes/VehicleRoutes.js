@@ -43,7 +43,6 @@ router.put('/EditVehicleDetails',
     authenticate, vehicleController.updateVehicle
 );
 
-
 router.get('/Get', authenticate, vehicleController.getVehicle);
 
 
