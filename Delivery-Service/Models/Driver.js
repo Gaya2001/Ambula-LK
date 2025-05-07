@@ -43,7 +43,7 @@ const vehicleWithUserSchema = new mongoose.Schema({
         },
         available: {
             type: Boolean,
-            default: true
+            default: false
         },
         location: {
             latitude: {

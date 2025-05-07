@@ -80,8 +80,8 @@ const AppContent = () => {
           <Route
             path="/owner/profile"
             element={
-                <RestaurantOwnerDashboard />
-            
+              <RestaurantOwnerDashboard />
+
             }
           />
           <Route
@@ -140,9 +140,9 @@ const AppContent = () => {
           <Route
             path="/admin-dashboard"
             element={
-             
-                <AdminDashboard />
-              
+
+              <AdminDashboard />
+
             }
           />
 
@@ -152,12 +152,16 @@ const AppContent = () => {
 
           {/* ===================== Delivery Rider Routes ===================== */}
 
+
           <Route path="/deliveryPersonnel" element={<DeliveryRiderHome />} />
 
           <Route
             path="/DeliveryPersonnel-OptionsSignUp"
             element={<DeliveryOptionsSignUp />}
           />
+
+
+
           <Route
             path="/deliveryPersonnel-SignUp"
             element={<DeliverySignUp />}
@@ -166,14 +170,30 @@ const AppContent = () => {
             path="/deliveryPersonnel/VehicleDetails-SignUp"
             element={<VehicleDetailsSignUp />}
           />
+
+
+
           <Route
             path="/deliveryPersonnel/DriverDashboard"
             element={<DriverDashboard />}
           />
+
+
+          {/* <Route
+            path="/deliveryPersonnel/DriverDashboard"
+            element={
+              <PrivateRoute roles={["DeliveryPerson"]}>
+                <DriverDashboard />
+              </PrivateRoute>
+            }
+          /> */}
+
+
           <Route
             path="/deliveryPersonnel/HomePage"
             element={<DeliveryRiderHome />}
           />
+
 
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/google-callback" element={<GoogleCallback />} />

@@ -262,11 +262,9 @@ function NavigationContent({ orderData }) {
 
             await MakeDriverAvailable(setLoading, setSuccess, setError);
 
-
-
-            // Update order status
-            console.log("Order ID:", currentOrder.orderId);
             await OrderService.UpdateOrderStatus(currentOrder.orderId, 'Delivered');
+
+            await DeliveryRiderService.DriverEarningCalculation();
 
             setSuccess('Delivery confirmed successfully!');
         } catch (err) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import restaurantService from "../../../services/restaurant-service";
+import DeliveryRiderService from '../../../services/DeliveryRider-service';  // Gayashan
 
 const RestaurantOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -49,7 +50,11 @@ const RestaurantOrders = () => {
       setLoading(false);
     }
   };
+
+
+
   const handleStatusChange = async (orderId, newStatus) => {
+
     try {
       await restaurantService.updateOrderStatus(orderId, newStatus); // Assuming you have an API for this
       setOrders((prevOrders) =>
@@ -61,6 +66,22 @@ const RestaurantOrders = () => {
       console.error(err);
       setError("Failed to update order status.");
     }
+
+    // If the status is changed to "Confirmed", call the DriversAssign function ( Gayashan)
+
+    if (newStatus === "Confirmed") {
+      try {
+        const response = await DeliveryRiderService.DriversAssign();
+        console.log(response.data);
+      } catch (err) {
+        console.error("Error Assigning Drivers", err);
+        setError(err.response?.data?.message || "Failed to Assign Drivers.");
+      }
+
+    }
+
+
+
   };
 
   return (
@@ -149,8 +170,8 @@ const RestaurantOrders = () => {
                     <td className="p-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${order.paymentStatus === "Paid"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-200 text-gray-700"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-gray-200 text-gray-700"
                           }`}
                       >
                         {order.paymentStatus || "Unpaid"}

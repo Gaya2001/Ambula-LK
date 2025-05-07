@@ -108,6 +108,23 @@ class DeliveryRiderService {
         });
     }
 
+    DriversAssign(data) {
+        return DeliveryRiderHTTP.post("/orders/DriverAssign", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
+    DriverEarningCalculation(data) {
+        return DeliveryRiderHTTP.post("/earnings/record", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
+
 
 
 }

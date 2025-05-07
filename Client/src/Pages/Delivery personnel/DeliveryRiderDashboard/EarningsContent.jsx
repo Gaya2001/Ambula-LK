@@ -268,7 +268,7 @@ function EarningsContent() {
                                     <tr key={payment.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{payment.id}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payment.date}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">Rs{payment.amount.toFixed(2)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">Rs{payment.amount.toFixed(2)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${payment.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                                                 }`}>

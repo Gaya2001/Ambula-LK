@@ -169,28 +169,29 @@ function OrdersContent({ setActiveTab, setNavigationData }) {
 
     const MarkAsDelivered = async () => {
         setLoading(true);
-        // Clear previous messages
+
         setSuccess('');
         setError('');
 
         try {
-            // Store order ID reference locally
+
             const currentOrderId = selectedOrder.id;
             const currentDeliveryId = selectedOrder.deliveryId;
 
             console.log("Current Delivery ID:", currentDeliveryId);
 
-            // Update delivery status
+
             const response = await DeliveryRiderService.UpdateDeliveryStatus({
                 deliveryId: currentDeliveryId,
                 status: 'delivered',
             });
 
-            // Make driver available
+
             await MakeDriverAvailable(setLoading, setSuccess, setError);
 
-            // Update order status
             await OrderService.UpdateOrderStatus(currentOrderId, 'Delivered');
+
+            await DeliveryRiderService.DriverEarningCalculation();
 
             // Update local state
             setOrders(prevOrders => {
