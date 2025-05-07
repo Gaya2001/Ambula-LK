@@ -1,51 +1,106 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCalendar, FaDownload, FaCreditCard, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import axios from 'axios';
+import DeliveryRiderService from '../../../services/DeliveryRider-service';
+
 
 function EarningsContent() {
     const [activeTimeframe, setActiveTimeframe] = useState('week');
     const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-
-    // Sample earnings data
-    const earningsData = {
+    const [earningsData, setEarningsData] = useState({
         week: {
-            total: 432.75,
-            orders: 38,
-            tips: 87.50,
-            bonuses: 45.00,
-            hours: 24,
-            averagePerOrder: 11.39,
-            averagePerHour: 18.03
+            total: 0,
+            orders: 0,
+            tips: 0,
+            bonuses: 0,
+            hours: 0,
+            averagePerOrder: 0,
+            averagePerHour: 0
         },
         month: {
-            total: 1745.60,
-            orders: 152,
-            tips: 348.20,
-            bonuses: 120.00,
-            hours: 96,
-            averagePerOrder: 11.48,
-            averagePerHour: 18.18
+            total: 0,
+            orders: 0,
+            tips: 0,
+            bonuses: 0,
+            hours: 0,
+            averagePerOrder: 0,
+            averagePerHour: 0
         },
         year: {
-            total: 18750.25,
-            orders: 1680,
-            tips: 3750.05,
-            bonuses: 1200.00,
-            hours: 1040,
-            averagePerOrder: 11.16,
-            averagePerHour: 18.03
+            total: 0,
+            orders: 0,
+            tips: 0,
+            bonuses: 0,
+            hours: 0,
+            averagePerOrder: 0,
+            averagePerHour: 0
         }
-    };
+    });
+    const [recentPayments, setRecentPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Recent payments data
-    const recentPayments = [
-        { id: 'PAY-20250415', date: 'Apr 15, 2025', amount: 432.75, status: 'completed' },
-        { id: 'PAY-20250408', date: 'Apr 08, 2025', amount: 387.50, status: 'completed' },
-        { id: 'PAY-20250401', date: 'Apr 01, 2025', amount: 412.60, status: 'completed' },
-        { id: 'PAY-20250325', date: 'Mar 25, 2025', amount: 398.25, status: 'completed' },
-        { id: 'PAY-20250318', date: 'Mar 18, 2025', amount: 407.80, status: 'completed' }
-    ];
+
+    useEffect(() => {
+        const fetchEarningsData = async () => {
+            try {
+                setLoading(true);
+                const response = await DeliveryRiderService.fetchEarningsData();
+
+                console.log('Earnings data:', response.data);
+
+                setEarningsData({
+                    week: response.data.week,
+                    month: response.data.month,
+                    year: response.data.year
+                });
+
+
+                setRecentPayments(response.data.recentPayments);
+
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching earnings data:', err);
+                setError('Failed to load earnings data. Please try again.');
+                setLoading(false);
+            }
+        };
+
+        fetchEarningsData();
+    }, []);
+
 
     const currentEarnings = earningsData[activeTimeframe];
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center p-10 h-64">
+                <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                    <p className="mt-2 text-gray-600">Loading earnings data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 m-4">
+                <div className="flex">
+                    <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                    <div className="ml-3">
+                        <p className="text-red-700">{error}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-6xl mx-auto space-y-6">
@@ -56,7 +111,7 @@ function EarningsContent() {
                         <div>
                             <h2 className="text-xl font-semibold mb-1">Total Earnings</h2>
                             <div className="flex items-baseline">
-                                <span className="text-4xl font-bold">${currentEarnings.total.toFixed(2)}</span>
+                                <span className="text-4xl font-bold">Rs {currentEarnings.total.toFixed(2)}</span>
                                 <span className="ml-2 text-sm opacity-80">
                                     {activeTimeframe === 'week' ? 'This Week' :
                                         activeTimeframe === 'month' ? 'This Month' : 'This Year'}
@@ -99,19 +154,19 @@ function EarningsContent() {
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Base Pay</span>
-                                    <span className="font-medium">${(currentEarnings.total - currentEarnings.tips - currentEarnings.bonuses).toFixed(2)}</span>
+                                    <span className="font-medium text-black">Rs {(currentEarnings.total - currentEarnings.tips - currentEarnings.bonuses).toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Tips</span>
-                                    <span className="font-medium">${currentEarnings.tips.toFixed(2)}</span>
+                                    <span className="font-medium text-black ">Rs {currentEarnings.tips.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Bonuses</span>
-                                    <span className="font-medium">${currentEarnings.bonuses.toFixed(2)}</span>
+                                    <span className="font-medium text-black ">Rs {currentEarnings.bonuses.toFixed(2)}</span>
                                 </div>
                                 <div className="pt-2 border-t border-gray-200 flex justify-between">
-                                    <span className="font-medium">Total</span>
-                                    <span className="font-bold">${currentEarnings.total.toFixed(2)}</span>
+                                    <span className="font-medium text-black">Total</span>
+                                    <span className="font-bold text-black ">Rs {currentEarnings.total.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,19 +176,19 @@ function EarningsContent() {
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Orders Completed</span>
-                                    <span className="font-medium">{currentEarnings.orders}</span>
+                                    <span className="font-medium text-black ">{currentEarnings.orders}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Hours Active</span>
-                                    <span className="font-medium">{currentEarnings.hours} hrs</span>
+                                    <span className="font-medium text-black ">{currentEarnings.hours} hrs</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Average Per Order</span>
-                                    <span className="font-medium">${currentEarnings.averagePerOrder.toFixed(2)}</span>
+                                    <span className="font-medium text-black">Rs {currentEarnings.averagePerOrder.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Average Per Hour</span>
-                                    <span className="font-medium">${currentEarnings.averagePerHour.toFixed(2)}</span>
+                                    <span className="font-medium text-black">Rs {currentEarnings.averagePerHour.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
@@ -208,53 +263,32 @@ function EarningsContent() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {recentPayments.map(payment => (
-                                <tr key={payment.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{payment.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payment.date}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">${payment.amount.toFixed(2)}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            {payment.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                        <button className="text-[#FF8A00] hover:text-[#FF9D2F]">Details</button>
+                            {recentPayments.length > 0 ? (
+                                recentPayments.map(payment => (
+                                    <tr key={payment.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{payment.id}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payment.date}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">Rs{payment.amount.toFixed(2)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${payment.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                                }`}>
+                                                {payment.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                            <button className="text-[#FF8A00] hover:text-[#FF9D2F]">Details</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                                        No recent payments found
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            {/* Earnings Trends */}
-            <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Earnings Trends</h2>
-
-                <div className="h-64 flex items-center justify-center bg-gray-100 rounded-lg">
-                    {/* This would be replaced by an actual chart component */}
-                    <p className="text-gray-500">Earnings chart would be displayed here</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    <div className="bg-[#0C1A39] text-white rounded-lg p-4">
-                        <h3 className="text-sm font-medium uppercase opacity-75">Best Day</h3>
-                        <p className="text-xl font-bold mt-1">Wednesday</p>
-                        <p className="text-sm mt-1">Average: $112.30</p>
-                    </div>
-
-                    <div className="bg-[#FF8A00] text-white rounded-lg p-4">
-                        <h3 className="text-sm font-medium uppercase opacity-75">Best Time</h3>
-                        <p className="text-xl font-bold mt-1">6:00 PM - 8:00 PM</p>
-                        <p className="text-sm mt-1">Average: $24.75/hr</p>
-                    </div>
-
-                    <div className="bg-gray-700 text-white rounded-lg p-4">
-                        <h3 className="text-sm font-medium uppercase opacity-75">Highest Tip</h3>
-                        <p className="text-xl font-bold mt-1">$28.50</p>
-                        <p className="text-sm mt-1">Apr 12, 2025</p>
-                    </div>
                 </div>
             </div>
         </div>

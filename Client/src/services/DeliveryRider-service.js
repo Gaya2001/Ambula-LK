@@ -100,6 +100,14 @@ class DeliveryRiderService {
         });
     }
 
+    fetchEarningsData(data) {
+        return DeliveryRiderHTTP.get("/earnings/summary", data, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+    }
+
 
 
 }

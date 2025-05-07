@@ -116,23 +116,7 @@ const UpdateDriverLocation = async (setLoading, setSuccess, setError) => {
         console.error("Error updating driver location:", err);
 
 
-        if (err.code) {
-            switch (err.code) {
-                case 1:
-                    setError("Location access was denied. Please enable location services in your browser settings.");
-                    break;
-                case 2:
-                    setError("Your location information is currently unavailable. Please try again.");
-                    break;
-                case 3:
-                    setError("The request to get your location timed out. Please check your internet connection.");
-                    break;
-                default:
-                    setError("An error occurred while trying to retrieve your location.");
-            }
-        } else {
-            setError(err.response?.data?.message || "Failed to update driver location.");
-        }
+
 
         setSuccess(null);
         setLoading(false);

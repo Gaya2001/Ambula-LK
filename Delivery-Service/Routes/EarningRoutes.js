@@ -1,17 +1,15 @@
-// routes/earnings.routes.js
 const express = require('express');
-const earningsController = require('../Controllers/EarningController');
-const auth = require('../middleware/auth');
-
 const router = express.Router();
+const earningsController = require('../controllers/EarningController');
+const authenticate = require('../middleware/auth');
 
-// All routes are protected
-router.use(auth);
 
-// Get driver's earnings
-router.get('/', earningsController.getEarnings);
+router.use(authenticate);
 
-// Get earnings summary
+// Get earnings summary (weekly, monthly, yearly)
 router.get('/summary', earningsController.getEarningsSummary);
+
+// Create earnings record for a completed delivery
+router.post('/record', earningsController.createEarningsRecord);
 
 module.exports = router;
