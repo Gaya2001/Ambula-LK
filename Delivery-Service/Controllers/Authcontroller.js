@@ -34,7 +34,7 @@ exports.RegisterDriver = async (req, res) => {
 
         // Create a JWT token
         const token = jwt.sign(
-            { userId: newDriver._id, },
+            { id: newDriver._id, },
             process.env.JWT_SECRET, // This should be an environment variable
             { expiresIn: '1h' } // Token expiration time
         );

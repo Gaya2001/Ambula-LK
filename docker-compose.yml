@@ -108,6 +108,20 @@ services:
     networks:
       - app-network
 
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "5007:5007"
+    volumes:
+      - ./notification-service:/app
+    env_file:
+      - ./notification-service/.env
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
   client:
     build: ./Client
     container_name: client-service

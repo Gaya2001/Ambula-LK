@@ -118,7 +118,7 @@ function EarningsTrendChart({ data }) {
                 },
                 title: {
                     display: true,
-                    text: 'Earnings ($)',
+                    text: 'Earnings (Rs)',
                     font: { size: 10 }
                 },
                 grid: {
@@ -205,32 +205,7 @@ function DashboardContent() {
     // Initialize with sample data to ensure the chart renders even with no data
     const [chartData, setChartData] = useState({
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [
-            {
-                label: 'Earnings',
-                data: [0, 0, 0, 0, 0, 0, 0],
-                backgroundColor: 'rgba(255, 138, 0, 0.6)',
-                borderColor: 'rgb(255, 138, 0)',
-                borderWidth: 1,
-                borderRadius: 5,
-            },
-            {
-                label: 'Completed',
-                data: [0, 0, 0, 0, 0, 0, 0],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgb(75, 192, 192)',
-                borderWidth: 1,
-                borderRadius: 5,
-            },
-            {
-                label: 'Cancelled',
-                data: [0, 0, 0, 0, 0, 0, 0],
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                borderColor: 'rgb(255, 99, 132)',
-                borderWidth: 1,
-                borderRadius: 5,
-            }
-        ],
+        datasets: [],
     });
 
     // For demo purposes - add sample data if you want to see the chart with values
@@ -239,32 +214,7 @@ function DashboardContent() {
 
         const sampleData = {
             labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [
-                {
-                    label: 'Earnings',
-                    data: [25, 45, 30, 70, 40, 60, 35],
-                    backgroundColor: 'rgba(255, 138, 0, 0.6)',
-                    borderColor: 'rgb(255, 138, 0)',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                },
-                {
-                    label: 'Completed',
-                    data: [5, 8, 6, 9, 7, 10, 5],
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgb(75, 192, 192)',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                },
-                {
-                    label: 'Cancelled',
-                    data: [1, 0, 2, 1, 0, 3, 1],
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                }
-            ],
+            datasets: [],
         };
 
         setChartData(sampleData);

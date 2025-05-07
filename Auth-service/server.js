@@ -150,9 +150,9 @@ app.post("/api/login", async (req, res) => {
   }
 
   const services = [
-    { name: "Admin", url: "http://localhost:4999/api/admin" },
+    { name: "Admin", url: "http://localhost:4001/api/admin" },
     { name: "RestaurantOwner", url: "http://localhost:5005/api/restaurant-owners" },
-    { name: "DeliveryPerson", url: "http://localhost:5002/api/delivery-persons" },
+    { name: "DeliveryPerson", url: "http://localhost:5002/api/driver/getAll" },
     { name: "Customer", url: "http://localhost:5006/api/customers" }
   ];
 
