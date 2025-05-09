@@ -6,6 +6,7 @@ const { uploadToCloudinary } = require('../Utils/Cloudinary');
 
 
 exports.getAllDrivers = async (req, res) => {
+    console.log("here")
     try {
 
         const drivers = await VehicleWithUser.find()

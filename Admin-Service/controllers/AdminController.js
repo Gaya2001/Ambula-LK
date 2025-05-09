@@ -5,8 +5,8 @@ const bcrypt = require("bcryptjs"); // Add bcrypt to verify the password
 const Notification = require("../models/Notification")
 
 const RESTAURANT_BASE_URL = process.env.RESTAURANT_BASE_URL;
-const CUSTOMER_BASE_URL = process.env.CUSTOMER_SERVICE_URL;
-const DELIVERY_BASE_URL = process.env.DELIVERY_SERVICE_URL;
+const CUSTOMER_BASE_URL = process.env.CUSTOMER_BASE_URL;
+const DELIVERY_BASE_URL = process.env.DELIVERY_BASE_URL;
 
 const registerAdmin = async (req, res) => {
   try {
@@ -167,11 +167,14 @@ const getAllRestaurantOwners = async (req, res) => {
 
 const getAllRestauants = async (req, res) => {
 
+
   try {
-    // Replace with the actual URL of your Restaurant-Service
-    const restaurantServiceURL = `${RESTAURANT_BASE_URL}`;
+    const restaurantServiceURL = `${RESTAURANT_BASE_URL}/all`;
+    
 
     const response = await axios.get(restaurantServiceURL);
+    console.log("response", response);
+    
 
     return res.status(200).json({
       message: "Fetched restaurants successfully",
@@ -233,7 +236,8 @@ const getCustomers = async (req, res) => {
 
 const getDrivers = async (req, res) => {
 
-  const driverServiceURL = `${DELIVERY_BASE_URL}`;
+  const driverServiceURL = `${DELIVERY_BASE_URL}/getAll`;
+  console.log("delevery ServiceURL : ", driverServiceURL);
 
   try {
     const response = await axios.get(driverServiceURL);
@@ -261,43 +265,6 @@ const notifyRegistration = async (req, res) => {
     const admins = await Admin.find();
     const adminEmails = admins.map((admin) => admin.email);
     const adminPhones = admins.map((admin) => admin.phone);
-
-    // 1️⃣ Send Email to Admins
-    // const transporter = nodemailer.createTransport({
-    //   service: "Gmail",
-    //   auth: {
-    //     user: process.env.EMAIL_USER,
-    //     pass: process.env.EMAIL_PASS,
-    //   },
-    // });
-
-    // await transporter.sendMail({
-    //   from: `"Restaurant System" <${process.env.EMAIL_USER}>`,
-    //   to: adminEmails,
-    //   subject: "New Restaurant Registration",
-    //   html: `
-    //     <h2>🍽️ New Restaurant Registered</h2>
-    //     <p><strong>Name:</strong> ${restaurant.name}</p>
-    //     <p><strong>Email:</strong> ${restaurant.email}</p>
-    //     <p><strong>Phone:</strong> ${restaurant.phone}</p>
-    //     <p><strong>Address:</strong> ${restaurant.street}, ${restaurant.city}, ${restaurant.state}, ${restaurant.country}</p>
-    //     <p><strong>Cuisine:</strong> ${restaurant.cuisine_type}</p>
-    //   `,
-    // });
-
-    // 2️⃣ Send SMS to Admins
-    // const client = twilio(
-    //   process.env.TWILIO_SID,
-    //   process.env.TWILIO_AUTH_TOKEN
-    // );
-
-    // for (const phone of adminPhones) {
-    //   await client.messages.create({
-    //     body: `📢 New Restaurant Registered: ${restaurant.name} (${restaurant.city})`,
-    //     from: process.env.TWILIO_PHONE_NUMBER,
-    //     to: phone,
-    //   });
-    // }
 
     // 3️⃣ Create System Notification
     await Notification.create({
