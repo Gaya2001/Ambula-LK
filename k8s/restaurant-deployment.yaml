@@ -1,1 +1,78 @@
-# type your yml code here 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-service
+  namespace: ambula-lk
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: restaurant-service
+  template:
+    metadata:
+      labels:
+        app: restaurant-service
+    spec:
+      containers:
+        - name: restaurant-service
+          image: gaya2001/restaurant-service:latest
+          ports:
+            - containerPort: 5005
+          env:
+            - name: PORT
+              value: "5005"
+            - name: NODE_ENV
+              value: "development"
+            - name: UPLOAD_DIR
+              value: "uploads"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: MONGODB_URI
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: JWT_SECRET
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: CLOUDINARY_API_KEY
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: CLOUDINARY_API_SECRET
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: GOOGLE_API_KEY
+            - name: ORDER_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: restaurant-service-secret
+                  key: ORDER_SERVICE_URL
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-service
+  namespace: ambula-lk
+spec:
+  selector:
+    app: restaurant-service
+  ports:
+    - port: 5005
+      targetPort: 5005
+  type: ClusterIP
