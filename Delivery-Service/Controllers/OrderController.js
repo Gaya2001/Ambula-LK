@@ -6,7 +6,7 @@ const haversineDistance = require('../Utils/DistanceCalculation');
 const DriverAssign = async (req, res) => {
     try {
         console.log('Fetching Orders...');
-        const OrdersResponse = await axios.get('http://localhost:5003/orders/DeliveryPerson/GetAllOrders');
+        const OrdersResponse = await axios.get('http://order-service:5003/orders/DeliveryPerson/GetAllOrders');
         const PaidOrders = Array.isArray(OrdersResponse.data.status)
             ? OrdersResponse.data.status.filter(order => order.paymentStatus === "Paid" && order.status === "Confirmed")
             : [];
@@ -23,7 +23,7 @@ const DriverAssign = async (req, res) => {
             let restaurant;
             try {
                 // Fetch restaurant data
-                const restaurantResponse = await axios.get(`http://localhost:5005/api/restaurant/${restaurantId}`);
+                const restaurantResponse = await axios.get(`http://restaurant-service:5005/api/restaurant/${restaurantId}`);
                 restaurant = restaurantResponse.data;
                 console.log('Successfully fetched restaurant data.');
             } catch (err) {

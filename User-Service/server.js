@@ -9,7 +9,13 @@ const customerRoutes = require("./routes/customerRoutes");
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+
 app.use(express.json());
 app.use(morgan("dev"));
 

@@ -17,6 +17,7 @@ const ManageRestaurants = () => {
     try {
       const response = await adminService.getAllRestaurants();
       const data = response.data.restaurants.data;
+      console.log("stts : ", data);
 
       // Separate active and pending restaurants
       const active = data.filter(res => res.status === 'approved');
@@ -24,6 +25,8 @@ const ManageRestaurants = () => {
 
       setRestaurants(active);
       setPendingRestaurants(pending);
+
+      console.log("pending : ", pending);
       setError(null);
     } catch (err) {
       setError(err.message);

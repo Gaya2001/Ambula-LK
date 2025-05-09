@@ -14,26 +14,26 @@ const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKE
 
 const registerRestaurant = async (req, res) => {
   try {
-    const {name, email, phone, street,state,postal_code, license,opHrs,opDays,city, country, cuisine_type } = req.body;
+    const { name, email, phone, street, state, postal_code, license, opHrs, opDays, city, country, cuisine_type } = req.body;
     // const { latitude, longitude } = await getCoordinates(address);
 
     const fullAddress = `${street}, ${city}, ${state},${country}`;
     const { latitude, longitude } = await getCoordinates(fullAddress);
 
-        // Check if files are uploaded
-        let logoUrl = null;
-        let bannerImageUrl = null;
-        if (req.files && req.files.logo) {
-          logoUrl = req.files.logo[0].path; // Get the file path for logo
-        }
-    
-        if (req.files && req.files.banner_image) {
-          bannerImageUrl = req.files.banner_image[0].path; // Get the file path for banner image
-        }
+    // Check if files are uploaded
+    let logoUrl = null;
+    let bannerImageUrl = null;
+    if (req.files && req.files.logo) {
+      logoUrl = req.files.logo[0].path; // Get the file path for logo
+    }
+
+    if (req.files && req.files.banner_image) {
+      bannerImageUrl = req.files.banner_image[0].path; // Get the file path for banner image
+    }
 
     const userId = req.userId;
     const owner = await RestaurantOwner.findById(userId);
-  
+
     const ownerId = owner._id;
 
     if (!owner) {
@@ -66,42 +66,40 @@ const registerRestaurant = async (req, res) => {
       logo: logoUrl,
       banner_image: bannerImageUrl,
       opDays
-    
+
     });
 
     // Save the new restaurant
     await newRestaurant.save();
 
-    const adminServiceURL = "http://localhost:4001/api/admin/notifyRegistration";
+    const adminServiceURL = "http://admin-service:4999/api/admin/notifyRegistration";
     try {
       const response = await axios.post(adminServiceURL, {
-        restaurant: newRestaurant, 
+        restaurant: newRestaurant,
       });
-    
+
       console.log("Admin notified successfully:", response.data);
     } catch (notifyError) {
       console.error("Failed to notify admin service:", notifyError.message);
     }
 
-
-
     return res.status(201).json({ message: "Restaurant registered successfully", restaurant: newRestaurant });
 
   } catch (error) {
     console.error("Error registering restaurant:", error);
-  
+
     // Handle Mongoose validation errors
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((val) => val.message);
       return res.status(400).json({ message: messages.join(", ") });
     }
-  
+
     // Handle duplicate key error (e.g., unique constraint violation)
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern || {})[0];
       return res.status(400).json({ message: `Duplicate value for field: ${field}` });
     }
-  
+
     // Default fallback
     return res.status(500).json({ message: "Internal server error. Please try again later." });
   }
@@ -109,7 +107,7 @@ const registerRestaurant = async (req, res) => {
 
 
 
-const myRestaurants = async(req,res)=>{
+const myRestaurants = async (req, res) => {
 
   try {
     const userId = req.userId;
@@ -120,27 +118,28 @@ const myRestaurants = async(req,res)=>{
     //find all restaurants owned by the user
     const restaurants = await Restaurant.find({ owner_id: userId });
 
-    if(!restaurants) {
+    if (!restaurants) {
       return res.status(404).json({
-        message:"Restaurants Not Found"
+        message: "Restaurants Not Found"
       })
     }
     return res.status(200).json({ message: "Restaurants found", restaurants });
 
 
-    
+
   } catch (error) {
     return res.status(500).json({ message: "Server error. Please try again later." });
   }
 
 }
 const getApprovedRestaurants = async (req, res) => {
+  console.log("here in restaurant service")
   try {
     const { searchTerm, cuisine_type } = req.query;
 
     const filter = {
-      status: 'approved' ,// Always only fetch approved restaurants
-      availability:true
+      status: 'approved',// Always only fetch approved restaurants
+      availability: true
     };
 
     if (searchTerm) {
@@ -149,10 +148,10 @@ const getApprovedRestaurants = async (req, res) => {
         { name: { $regex: searchTerm, $options: 'i' } },
         { city: { $regex: searchTerm, $options: 'i' } },
         { cuisine_type: { $regex: searchTerm, $options: 'i' } },
-       
+
       ];
     }
-    
+
 
     if (cuisine_type) {
       filter.cuisine_type = { $regex: cuisine_type, $options: 'i' };
@@ -183,18 +182,18 @@ const getAllRestaurants = async (req, res) => {
   try {
     const { searchTerm, cuisine_type } = req.query;
 
-    const filter ={}
-    
+    const filter = {}
+
     if (searchTerm) {
       // Match searchTerm with name OR city OR cuisine_type
       filter.$or = [
         { name: { $regex: searchTerm, $options: 'i' } },
         { city: { $regex: searchTerm, $options: 'i' } },
         { cuisine_type: { $regex: searchTerm, $options: 'i' } },
-       
+
       ];
     }
-    
+
 
     if (cuisine_type) {
       filter.cuisine_type = { $regex: cuisine_type, $options: 'i' };
@@ -261,7 +260,7 @@ const rateRestaurant = async (req, res) => {
 const getTopRatedRestaurants = async (req, res) => {
   try {
     const topRestaurants = await Restaurant.find()
-      .sort({ averageRating: -1 }) 
+      .sort({ averageRating: -1 })
       .limit(6); // Only take top 6
 
     res.status(200).json({
@@ -361,7 +360,7 @@ const edtRestaurant = async (req, res) => {
       opHrs,
       opDays,
       cuisine_type,
-      
+
     } = req.body;
 
     // Check if restaurant exists
@@ -424,13 +423,13 @@ const getRestaurantOrders = async (req, res) => {
     const { restaurantId } = req.params;
 
     const restaurant = await Restaurant.findById(restaurantId);
-    
+
 
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    
+
     // return res.status(200).json({ message: "Restaurant found" });
     const orderRes = await axios.get(`${ORDER_SERVICE_URL}/${restaurantId}`);
 
@@ -473,7 +472,7 @@ const getOrderDetails = async (req, res) => {
         items: populatedItems,
         status: order.status,
         paymentStatus: order.paymentStatus,
-        createdAt : order.createdAt
+        createdAt: order.createdAt
       });
     }
 
@@ -483,10 +482,6 @@ const getOrderDetails = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
-
-
-
 
 
 

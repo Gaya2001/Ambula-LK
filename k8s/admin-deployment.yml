@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  namespace: ambula-lk
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers:
+        - name: admin-service
+          image: gaya2001/admin-service:latest
+          ports:
+            - containerPort: 4999
+          env:
+            - name: PORT
+              value: "4999"
+            - name: NODE_ENV
+              value: "development"
+            - name: UPLOAD_DIR
+              value: "uploads"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: MONGODB_URI
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: JWT_SECRET
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: CLOUDINARY_API_KEY
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: CLOUDINARY_API_SECRET
+            - name: EMAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: EMAIL_USER
+            - name: EMAIL_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: EMAIL_PASS
+            - name: TWILIO_SID
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: TWILIO_SID
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: TWILIO_AUTH_TOKEN
+            - name: TWILIO_PHONE_NUMBER
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: TWILIO_PHONE_NUMBER
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: GOOGLE_API_KEY
+            - name: RESTAURANT_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: RESTAURANT_BASE_URL
+            - name: CUSTOMER_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: CUSTOMER_BASE_URL
+            - name: DELIVERY_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: DELIVERY_BASE_URL
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+  namespace: ambula-lk
+spec:
+  selector:
+    app: admin-service
+  ports:
+    - port: 4999
+      targetPort: 4999
+  type: ClusterIP

@@ -6,7 +6,7 @@ import { orderHTTP } from "./httpCommon-service";
 // services/order-service.js
 import axios from 'axios';
 
-const API_URL = `${import.meta.env.VITE_Order_URL || 'http://localhost:5001'}/orders`;
+const API_URL = `${import.meta.env.VITE_Order_URL || 'http://order-service:5003'}/orders`;
 
 // Create a request interceptor function to add the auth token
 const getAuthHeader = () => {
