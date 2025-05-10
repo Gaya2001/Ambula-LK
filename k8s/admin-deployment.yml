@@ -21,11 +21,11 @@ spec:
           env:
             - name: PORT
               value: "4999"
-            - name: MONGODB_URI
+            - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
                   name: admin-service-secret
-                  key: MONGODB_URI
+                  key: MONGO_URI
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -36,41 +36,24 @@ spec:
                 secretKeyRef:
                   name: admin-service-secret
                   key: CLOUDINARY_API_KEY
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: admin-service-secret
+                  key: CLOUDINARY_CLOUD_NAME
+
             - name: CLOUDINARY_API_SECRET
               valueFrom:
                 secretKeyRef:
                   name: admin-service-secret
                   key: CLOUDINARY_API_SECRET
-            - name: EMAIL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: admin-service-secret
-                  key: EMAIL_USER
-            - name: EMAIL_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: admin-service-secret
-                  key: EMAIL_PASS
-            - name: TWILIO_SID
-              valueFrom:
-                secretKeyRef:
-                  name: admin-service-secret
-                  key: TWILIO_SID
-            - name: TWILIO_AUTH_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: admin-service-secret
-                  key: TWILIO_AUTH_TOKEN
-            - name: TWILIO_PHONE_NUMBER
-              valueFrom:
-                secretKeyRef:
-                  name: admin-service-secret
-                  key: TWILIO_PHONE_NUMBER
+
             - name: GOOGLE_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: admin-service-secret
                   key: GOOGLE_API_KEY
+
             - name: RESTAURANT_BASE_URL
               valueFrom:
                 secretKeyRef:
