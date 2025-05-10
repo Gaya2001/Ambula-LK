@@ -1,1 +1,81 @@
-# type your yml code here 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: ambula-lk
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: gaya2001/payment-service:latest
+          ports:
+            - containerPort: 5004
+          env:
+            - name: PORT
+              value: "5004"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: MONGODB_URI
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: JWT_SECRET
+            - name: PAYHERE_MERCHANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: PAYHERE_MERCHANT_ID
+            - name: PAYHERE_MERCHANT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: PAYHERE_MERCHANT_SECRET
+            - name: PAYHERE_RETURN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: PAYHERE_RETURN_URL
+            - name: PAYHERE_CANCEL_URL
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: PAYHERE_CANCEL_URL
+            - name: PAYHERE_NOTIFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-secret
+                  key: PAYHERE_NOTIFY_URL
+            
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: ambula-lk
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - port: 5004
+      targetPort: 5004
+  type: ClusterIP
+
