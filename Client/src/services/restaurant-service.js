@@ -110,7 +110,6 @@ class RestaurantService {
   }
 
   updateOrderStatus(orderId, status) {
-    console.log("status : ", orderId, status);
     return orderHTTP.put(
       `/orders/status/update/${orderId}`,
       { newStatus: status }, // This is the data/body parameter in axios

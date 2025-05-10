@@ -18,7 +18,6 @@ const AdminProfile = () => {
     email: "",
     username: "",
     phone: "",
-    password: "",
   });
 
   useEffect(() => {
@@ -36,7 +35,6 @@ const AdminProfile = () => {
           email: adminData.email || "",
           username: adminData.username || "",
           phone: adminData.phone || "",
-          password: "",
         });
       } catch {
         setError("Failed to load admin profile.");
@@ -156,14 +154,14 @@ const AdminProfile = () => {
         {/* Form */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {["first_name", "last_name", "email", "username", "phone", "password"].map((field) => (
+            {["first_name", "last_name", "email", "username", "phone"].map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   {field.replace("_", " ").toUpperCase()}
                 </label>
                 {editMode ? (
                   <input
-                    type={field === "password" ? "password" : "text"}
+                    type="text"
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
@@ -172,7 +170,7 @@ const AdminProfile = () => {
                   />
                 ) : (
                   <div className="text-gray-800 border-b py-2">
-                    {field === "password" ? "********" : admin[field]}
+                    {admin[field]}
                   </div>
                 )}
               </div>

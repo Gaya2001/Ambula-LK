@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Order = require("../models/Order");
 const { v4: uuidv4 } = require("uuid");
 
-const RESTAURANT_BASE_URL = process.env.RESTAURANT_BASE_URL;
+const RESTAURANT_BASE_URL = "http://restaurant-service:5005/api/restaurant";
 
 exports.placeOrder = async (req, res) => {
   // Get customer information and total amount directly from request body

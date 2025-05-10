@@ -6,7 +6,7 @@ const notifyCustomer = async (req, res) => {
   const { customerId, orderId, type } = req.body;
 
   try {
-    const userRes = await axios.get(`http://localhost:5006/api/customers/${customerId}`); // Change to actual User Service URL
+    const userRes = await axios.get(`http://user-service:5006/api/customers/${customerId}`); // Change to actual User Service URL
     const customer = userRes.data.customer;
 
     const smsMessage = `AMBULA.LK\n\nHello ${customer.first_name} ${customer.last_name},\n\nYour order ${orderId} has been confirmed.\n\nThank you for ordering with us!`;

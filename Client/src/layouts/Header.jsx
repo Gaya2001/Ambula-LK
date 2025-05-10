@@ -1,38 +1,29 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaShoppingCart, FaBars } from "react-icons/fa";
+import { FaShoppingCart, FaBars, FaUserCircle } from "react-icons/fa";
 import logo from "/src/assets/logo-color.png";
 import Sidebar from "./Sidebar";
 import { UserContext } from "../context/UserContext";
-import { FaUserCircle } from "react-icons/fa";
-
-
-
 
 function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const role = localStorage.getItem("role");
-  const token = localStorage.getItem("token");
-  const isCustomer = localStorage.getItem("role") === "Customer";
-
-  let profileLink = "";
-
-  if (role === "Admin") {
-    profileLink = "/admin-dashboard"
-  }
-  if (role === "Restaurant Owner") {
-    profileLink = "/owner/profile"
-  }
-  if (role === "Customer") {
-    profileLink = "/customer-dashboard"
-  }
-
-
-  // Access user data from context
   const { user } = useContext(UserContext);
-  const { username, loggedIn, profile_image } = user;
-
-  const userImage = profile_image;
+  
+  // Get user data from context and localStorage
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const isCustomer = role === "Customer";
+  const isLoggedIn = Boolean(token && user?.loggedIn);
+  
+  // Determine profile link based on user role
+  let profileLink = "";
+  if (role === "Admin") {
+    profileLink = "/admin-dashboard";
+  } else if (role === "Restaurant Owner") {
+    profileLink = "/owner/profile";
+  } else if (role === "Customer") {
+    profileLink = "/customer-dashboard";
+  }
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -62,16 +53,15 @@ function Header() {
             >
               Restaurants
             </Link>
-            <>
-              {isCustomer && ( // Render the link only if the user is a 'Customer'
-                <Link
-                  to="/orders"
-                  className="text-white px-4 py-2 rounded hover:bg-[#FC8A06]"
-                >
-                  Track Order
-                </Link>
-              )}
-            </>
+            
+            {isCustomer && (
+              <Link
+                to="/orders"
+                className="text-white px-4 py-2 rounded hover:bg-[#FC8A06]"
+              >
+                Track Order
+              </Link>
+            )}
 
             <Link
               to="/deliveryPersonnel/HomePage"
@@ -79,21 +69,20 @@ function Header() {
             >
               Drive
             </Link>
-
           </div>
 
           {/* Right Section */}
           <div className="flex items-center space-x-6">
             {/* If logged in: Show profile, else show login */}
-            {token && loggedIn ? (
+            {isLoggedIn ? (
               <Link
                 to={profileLink}
                 className="flex flex-col items-center text-[#FC8A06] hover:text-[#E67E22]"
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-100 mb-1">
-                  {userImage ? (
+                  {user.profile_image ? (
                     <img
-                      src={userImage}
+                      src={user.profile_image}
                       alt="User Profile"
                       className="w-full h-full object-cover"
                     />
@@ -101,8 +90,9 @@ function Header() {
                     <FaUserCircle className="text-orange-500 w-6 h-6" />
                   )}
                 </div>
-
-                <span className="text-md font-semibold text-center ">{username}</span>
+                <span className="text-md font-semibold text-center">
+                  {user.username || "User"}
+                </span>
               </Link>
             ) : (
               <Link
@@ -113,17 +103,14 @@ function Header() {
               </Link>
             )}
 
-            <>
-              {isCustomer && (
-                <Link to="/cart" className="relative">
-                  <FaShoppingCart size={24} className="text-white" />
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
-                    3
-                  </span>
-                </Link>
-
-              )}
-            </>
+            {isCustomer && (
+              <Link to="/cart" className="relative">
+                <FaShoppingCart size={24} className="text-white" />
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                  3
+                </span>
+              </Link>
+            )}
 
             {/* Menu Icon */}
             <button
@@ -140,9 +127,9 @@ function Header() {
       <Sidebar
         sidebarOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
-        loggedIn={loggedIn}
-        username={username}
-        profileImage={profile_image}
+        loggedIn={isLoggedIn}
+        username={user?.username}
+        profileImage={user?.profile_image}
       />
     </>
   );

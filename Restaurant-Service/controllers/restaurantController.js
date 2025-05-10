@@ -83,8 +83,6 @@ const registerRestaurant = async (req, res) => {
       console.error("Failed to notify admin service:", notifyError.message);
     }
 
-
-
     return res.status(201).json({ message: "Restaurant registered successfully", restaurant: newRestaurant });
 
   } catch (error) {
@@ -135,6 +133,7 @@ const myRestaurants = async (req, res) => {
 
 }
 const getApprovedRestaurants = async (req, res) => {
+  console.log("here in restaurant service")
   try {
     const { searchTerm, cuisine_type } = req.query;
 

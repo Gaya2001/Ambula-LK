@@ -25,11 +25,9 @@ class AdminService {
   createSystemOffer(data){
     return AdminHTTP.post("/system-offers",data)
   }
-  getAllRestaurants(searchTerm = "") {
+  getAllRestaurants() {
     return AdminHTTP.get("/admin/restaurants/", {
-      params: {
-        searchTerm
-      }
+      
     });
   }
   approveRestaurant(id){
