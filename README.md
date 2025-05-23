@@ -4,6 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Food Ordering & Delivery Platform - Complete README</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      max-width: 1000px;
+      margin: auto;
+      padding: 2rem;
+      color: #333;
+      background-color: #f9f9f9;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 0.5rem;
+    }
+    h2 {
+      color: #34495e;
+      margin-top: 2rem;
+      border-left: 4px solid #3498db;
+      padding-left: 1rem;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    code {
+      background-color: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    pre {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .tech-item {
+      background: #ecf0f1;
+      padding: 1rem;
+      border-radius: 5px;
+      border-left: 4px solid #3498db;
+    }
+    .role-card {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    .highlight {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 5px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
